@@ -77,7 +77,7 @@ export { shootingstarunconfirmed }     from './candlestick/ShootingStarUnconfirm
 export { tweezertop }                  from './candlestick/TweezerTop';
 export { tweezerbottom }               from './candlestick/TweezerBottom';
 
-export  { fibonacciretracement}        from './drawingtools/fibonacci';
+// export  { fibonacciretracement}        from './drawingtools/fibonacci';
 
 // export  { predictPattern, PatternDetector }              from './patterndetection/patterndetection';
 // export  { AvailablePatterns }              from './patterndetection/patterndetection';
