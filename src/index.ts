@@ -52,7 +52,7 @@ export  { bullishharami }              from  './candlestick/BullishHarami';
 export  { bearishharami }              from  './candlestick/BearishHarami';
 export  { bullishharamicross }         from  './candlestick/BullishHaramiCross';
 export  { bearishharamicross }         from  './candlestick/BearishHaramiCross';
-export  { eveningdojistar }            from  './candlestick/EveningDojiStar';
+// export  { eveningdojistar }            from  './candlestick/EveningDojiStar';
 export  { eveningstar }                from  './candlestick/EveningStar';
 export  { morningdojistar }            from  './candlestick/MorningDojiStar';
 export  { morningstar }                from  './candlestick/MorningStar';
