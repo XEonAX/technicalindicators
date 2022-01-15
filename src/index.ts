@@ -9,7 +9,7 @@ export  { macd, MACD }                     from  './moving_averages/MACD';
 export  { rsi, RSI }                       from  './oscillators/RSI';
 export  { bollingerbands, BollingerBands } from  './volatility/BollingerBands';
 export  { adx, ADX }                       from  './directionalmovement/ADX';
-export  { atr, ATR }                       from  './directionalmovement/ATR';
+// export  { atr, ATR }                       from  './directionalmovement/ATR';
 export  { truerange, TrueRange }           from  './directionalmovement/TrueRange';
 export  { roc, ROC }                       from  './momentum/ROC';
 export  { kst, KST }                       from  './momentum/KST';
