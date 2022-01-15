@@ -27,11 +27,11 @@ export  { volumeprofile, VolumeProfile }   from  './volume/VolumeProfile';
 export  { mfi, MFI }                       from  './volume/MFI';
 export  { stochasticrsi, StochasticRSI }   from  './momentum/StochasticRSI';
 
-export  { averagegain, AverageGain }       from  './Utils/AverageGain';
-export  { averageloss, AverageLoss }       from  './Utils/AverageLoss';
-export  { sd, SD }                         from  './Utils/SD';
-export  { highest, Highest }                         from  './Utils/Highest';
-export  { lowest, Lowest }                         from  './Utils/Lowest';
+// export  { averagegain, AverageGain }       from  './Utils/AverageGain';
+// export  { averageloss, AverageLoss }       from  './Utils/AverageLoss';
+// export  { sd, SD }                         from  './Utils/SD';
+// export  { highest, Highest }                         from  './Utils/Highest';
+// export  { lowest, Lowest }                         from  './Utils/Lowest';
 export  { sum, Sum }                         from  './Utils/Sum';
 export  { FixedSizeLinkedList }                 
 
