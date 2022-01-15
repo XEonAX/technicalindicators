@@ -64,7 +64,7 @@ export  { bearishspinningtop }         from  './candlestick/BearishSpinningTop';
 export  { threeblackcrows }            from  './candlestick/ThreeBlackCrows';
 export  { threewhitesoldiers }         from  './candlestick/ThreeWhiteSoldiers';
 
-export { bullishhammerstick }          from './candlestick/BullishHammerStick';
+// export { bullishhammerstick }          from './candlestick/BullishHammerStick';
 export { bearishhammerstick }          from './candlestick/BearishHammerStick';
 export { bullishinvertedhammerstick }  from './candlestick/BullishInvertedHammerStick';
 export { bearishinvertedhammerstick }  from './candlestick/BearishInvertedHammerStick';
