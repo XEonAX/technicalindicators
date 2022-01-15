@@ -35,7 +35,7 @@ export  { lowest, Lowest }                         from  './Utils/Lowest';
 export  { sum, Sum }                         from  './Utils/Sum';
 export  { FixedSizeLinkedList }                 
 
-export  { renko }                         from  './chart_types/Renko';
+// export  { renko }                         from  './chart_types/Renko';
 export  { HeikinAshi, heikinashi }        from  './chart_types/HeikinAshi';
 
 export  { bullish }                    from  './candlestick/Bullish';
