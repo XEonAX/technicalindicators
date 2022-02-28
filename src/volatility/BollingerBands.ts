@@ -59,7 +59,7 @@ export class BollingerBands extends Indicator {
         this.generator.next();
 
         priceArray.forEach((tick) => {
-            var result = this.generator.next(tick);
+            var result = this.generator.next(tick as any);
             if(result.value != undefined){
                 this.result.push(result.value);
             }
@@ -69,7 +69,7 @@ export class BollingerBands extends Indicator {
     static calculate = bollingerbands;
 
     nextValue(price:number):BollingerBandsOutput | undefined {
-        return this.generator.next(price).value;
+        return this.generator.next(price as any).value;
     };
 }
 

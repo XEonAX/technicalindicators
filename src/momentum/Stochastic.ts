@@ -6,6 +6,7 @@ import { IndicatorInput, Indicator } from '../indicator/indicator';
 
 import LinkedList from '../Utils/FixedSizeLinkedList';
 import { SMA }  from '../moving_averages/SMA';
+import { CandleData } from 'src/StockData';
 
 export class StochasticInput extends IndicatorInput{
   period:number;
@@ -51,7 +52,7 @@ export class Stochastic extends Indicator {
         format : (v) => {return v}
       });
       let k,d;
-      var tick = yield;
+      var tick: CandleData = yield;
       while (true) {
         pastHighPeriods.push(tick.high);
         pastLowPeriods.push(tick.low);
@@ -78,7 +79,7 @@ export class Stochastic extends Indicator {
         high : highs[index],
         low  : lows[index],
         close : closes[index]
-      });
+      } as any);
       if(result.value !== undefined){
         this.result.push(result.value);
       }
@@ -88,7 +89,7 @@ export class Stochastic extends Indicator {
   static calculate = stochastic
 
   nextValue (input:StochasticInput):StochasticOutput {
-    let nextResult = this.generator.next(input);
+    let nextResult = this.generator.next(input as any);
     if(nextResult.value !== undefined)
       return nextResult.value;
   };

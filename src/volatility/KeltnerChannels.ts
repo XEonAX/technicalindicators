@@ -61,7 +61,7 @@ export class KeltnerChannels extends Indicator {
           low     : input.low[index],
           close   : input.close[index],
         }
-        var result = this.generator.next(tickInput);
+        var result = this.generator.next(tickInput as any);
         if(result.value != undefined){
           this.result.push(result.value);
         }
@@ -71,7 +71,7 @@ export class KeltnerChannels extends Indicator {
   static calculate = keltnerchannels;
 
   nextValue(price:KeltnerChannelsInput):KeltnerChannelsOutput | undefined {
-     var result =  this.generator.next(price);
+     var result =  this.generator.next(price as any);
      if(result.value != undefined){
         return result.value;
       }

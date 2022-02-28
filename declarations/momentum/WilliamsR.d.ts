@@ -1,4 +1,4 @@
-import { IndicatorInput, Indicator } from '../indicator/indicator';
+import { IndicatorInput, Indicator } from "../indicator/indicator";
 export declare class WilliamsRInput extends IndicatorInput {
     low: number[];
     high: number[];

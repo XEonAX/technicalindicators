@@ -37,7 +37,7 @@ export class Highest extends Indicator {
       this.generator.next();
 
       values.forEach((value, index) => {
-        var result = this.generator.next(value);
+        var result = this.generator.next(value as any);
         if(result.value != undefined) {
           this.result.push(result.value);
         }
@@ -47,7 +47,7 @@ export class Highest extends Indicator {
   static calculate = highest;
 
   nextValue(price:number):number | undefined {
-     var result =  this.generator.next(price);
+     var result =  this.generator.next(price as any);
      if(result.value != undefined){
         return result.value;
       }

@@ -1,6 +1,6 @@
-import {Indicator, IndicatorInput} from '../indicator/indicator';
-import {CrossUp} from './CrossUp';
-import {CrossDown} from './CrossDown';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
+import { CrossUp } from "./CrossUp";
+import { CrossDown } from "./CrossDown";
 
 export class CrossInput extends IndicatorInput {
     constructor(public lineA: number[], public lineB: number[]) {
@@ -15,17 +15,23 @@ export class CrossOver extends Indicator {
     constructor(input: CrossInput) {
         super(input);
 
-        var crossUp = new CrossUp({lineA: input.lineA, lineB: input.lineB});
-        var crossDown = new CrossDown({lineA: input.lineA, lineB: input.lineB});
+        var crossUp = new CrossUp({ lineA: input.lineA, lineB: input.lineB });
+        var crossDown = new CrossDown({
+            lineA: input.lineA,
+            lineB: input.lineB,
+        });
 
-        const genFn = (function* (): IterableIterator<true | false> {
-            var current = yield;
+        const genFn = function* (): IterableIterator<true | false> {
+            var current: any = yield;
             var result = false;
             var first = true;
 
             while (true) {
                 var nextUp = crossUp.nextValue(current.valueA, current.valueB);
-                var nextDown = crossDown.nextValue(current.valueA, current.valueB);
+                var nextDown = crossDown.nextValue(
+                    current.valueA,
+                    current.valueB
+                );
 
                 result = nextUp || nextDown;
 
@@ -33,7 +39,7 @@ export class CrossOver extends Indicator {
                 first = false;
                 current = yield result;
             }
-        });
+        };
 
         this.generator = genFn();
         this.generator.next();
@@ -44,7 +50,7 @@ export class CrossOver extends Indicator {
         this.result = resultA.map((a, index) => {
             if (index === 0) return false;
             return !!(a || resultB[index]);
-        })
+        });
     }
 
     static calculate = crossOver;
@@ -59,9 +65,9 @@ export class CrossOver extends Indicator {
     nextValue(valueA: number, valueB: number): true | false {
         return this.generator.next({
             valueA: valueA,
-            valueB: valueB
-        }).value;
-    };
+            valueB: valueB,
+        } as any).value;
+    }
 }
 
 export function crossOver(input: CrossInput): boolean[] {

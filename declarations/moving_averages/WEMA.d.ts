@@ -1,5 +1,5 @@
-import { Indicator } from '../indicator/indicator';
-import { MAInput } from './SMA';
+import { Indicator } from "../indicator/indicator";
+import { MAInput } from "./SMA";
 export declare class WEMA extends Indicator {
     period: number;
     price: number[];

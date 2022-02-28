@@ -43,11 +43,11 @@ export class OBV extends Indicator {
     this.generator.next();
 
     closes.forEach((close, index) => {
-      let tickInput = {
+      let tickInput: CandleData = {
         close   : closes[index],
         volume  : volumes[index]
       }
-      let result = this.generator.next(tickInput);
+      let result = this.generator.next(tickInput as any);
       if(result.value != undefined){
         this.result.push(result.value);
       }
@@ -56,8 +56,8 @@ export class OBV extends Indicator {
 
   static calculate = obv;
 
-  nextValue(price:CandleData):number | undefined {
-     return this.generator.next(price).value;
+  nextValue(price:CandleData):number {
+     return this.generator.next(price as any).value;
   };
 
 }

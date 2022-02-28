@@ -24,7 +24,7 @@ export class SMA extends Indicator{
             var list = new LinkedList();
             var sum = 0;
             var counter = 1;
-            var current = yield;
+            var current: number = yield;
             var result;
             list.push(0);
             while(true){
@@ -45,7 +45,7 @@ export class SMA extends Indicator{
         this.generator.next();
         this.result = [];
         this.price.forEach((tick) => {
-            var result = this.generator.next(tick);
+            var result = this.generator.next(tick as any);
             if(result.value !== undefined){
                 this.result.push(this.format(result.value));
             }
@@ -55,7 +55,7 @@ export class SMA extends Indicator{
     static calculate = sma;
 
     nextValue(price:number):number | undefined {
-        var result = this.generator.next(price).value;
+        var result = this.generator.next(price as any).value;
         if(result != undefined)
             return this.format(result);
     };

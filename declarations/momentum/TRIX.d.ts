@@ -1,4 +1,4 @@
-import { Indicator, IndicatorInput } from '../indicator/indicator';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
 export declare class TRIXInput extends IndicatorInput {
     values: number[];
     period: number;
@@ -8,6 +8,6 @@ export declare class TRIX extends Indicator {
     generator: IterableIterator<number | undefined>;
     constructor(input: TRIXInput);
     static calculate: typeof trix;
-    nextValue(price: number): number;
+    nextValue(price: number): any;
 }
 export declare function trix(input: TRIXInput): number[];

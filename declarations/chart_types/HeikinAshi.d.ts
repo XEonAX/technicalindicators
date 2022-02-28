@@ -1,8 +1,8 @@
-import { CandleData, CandleList } from '../StockData';
+import { CandleData, CandleList } from "../StockData";
 /**
  * Created by AAravindan on 5/4/16.
  */
-import { Indicator, IndicatorInput } from '../indicator/indicator';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
 export declare class HeikinAshiInput extends IndicatorInput {
     low?: number[];
     open?: number[];

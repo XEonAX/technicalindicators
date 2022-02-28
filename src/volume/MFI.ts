@@ -80,7 +80,7 @@ export class MFI extends Indicator {
           close   : closes[index],
           volume  : volumes[index]
         }
-        var result = this.generator.next(tickInput);
+        var result = this.generator.next(tickInput as any);
         if(result.value != undefined){
           this.result.push(parseFloat(result.value.toFixed(2)));
         }
@@ -90,7 +90,7 @@ export class MFI extends Indicator {
   static calculate = mfi;
 
   nextValue(price:CandleData):number | undefined {
-     var result =  this.generator.next(price);
+     var result =  this.generator.next(price as any);
      if(result.value != undefined){
         return (parseFloat(result.value.toFixed(2)));
       }

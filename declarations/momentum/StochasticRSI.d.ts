@@ -1,4 +1,4 @@
-import { IndicatorInput, Indicator } from '../indicator/indicator';
+import { IndicatorInput, Indicator } from "../indicator/indicator";
 export declare class StochasticRsiInput extends IndicatorInput {
     values: number[];
     rsiPeriod: number;

@@ -1,5 +1,5 @@
-import { Indicator, IndicatorInput } from '../indicator/indicator';
-import { CandleData } from '../StockData';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
+import { CandleData } from "../StockData";
 export declare class IchimokuCloudInput extends IndicatorInput {
     high: number[];
     low: number[];

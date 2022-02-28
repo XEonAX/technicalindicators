@@ -1,4 +1,4 @@
-import { Indicator, IndicatorInput } from '../indicator/indicator';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
 export declare class CrossInput extends IndicatorInput {
     lineA: number[];
     lineB: number[];

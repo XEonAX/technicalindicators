@@ -22,7 +22,7 @@ export class CrossUp extends Indicator {
         var currentLineB = [];
 
         const genFn = (function* (): IterableIterator<true | false> {
-            var current = yield;
+            var current: any = yield;
             var result = false;
 
             while (true) {
@@ -59,7 +59,7 @@ export class CrossUp extends Indicator {
             var result = this.generator.next({
                 valueA: this.lineA[index],
                 valueB: this.lineB[index]
-            });
+            } as any);
 
             if (result.value !== undefined) {
                 this.result.push(result.value);
@@ -80,7 +80,7 @@ export class CrossUp extends Indicator {
         return this.generator.next({
             valueA: valueA,
             valueB: valueB
-        }).value;
+        } as any).value;
     };
 }
 

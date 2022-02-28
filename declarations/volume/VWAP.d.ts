@@ -1,5 +1,5 @@
-import { CandleData } from '../StockData';
-import { Indicator, IndicatorInput } from '../indicator/indicator';
+import { CandleData } from "../StockData";
+import { Indicator, IndicatorInput } from "../indicator/indicator";
 export declare class VWAPInput extends IndicatorInput {
     high: number[];
     low: number[];
@@ -8,9 +8,9 @@ export declare class VWAPInput extends IndicatorInput {
 }
 export declare class VWAP extends Indicator {
     result: number[];
-    generator: IterableIterator<number | undefined>;
+    generator: IterableIterator<number>;
     constructor(input: VWAPInput);
     static calculate: typeof vwap;
-    nextValue(price: CandleData): number | undefined;
+    nextValue(price: CandleData): number;
 }
 export declare function vwap(input: VWAPInput): number[];

@@ -1,4 +1,4 @@
-import { IndicatorInput, Indicator } from '../indicator/indicator';
+import { IndicatorInput, Indicator } from "../indicator/indicator";
 export declare class PSARInput extends IndicatorInput {
     step: number;
     max: number;

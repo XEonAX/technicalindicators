@@ -36,7 +36,7 @@ export class WMA extends Indicator{
     this.generator.next();
 
     priceArray.forEach((tick, index) => {
-      var result = this.generator.next(tick)
+      var result = this.generator.next(tick as any)
       if(result.value != undefined){
         this.result.push(this.format(result.value));
       }
@@ -47,7 +47,7 @@ export class WMA extends Indicator{
 
     //STEP 5. REMOVE GET RESULT FUNCTION
   nextValue(price:number):number | undefined {
-      var result = this.generator.next(price).value;
+      var result = this.generator.next(price as any).value;
       if(result != undefined)
           return this.format(result);
   };

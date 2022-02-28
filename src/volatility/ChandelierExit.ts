@@ -53,7 +53,7 @@ export class ChandelierExit extends Indicator {
           low     : lows[index],
           close   : closes[index],
         }
-        var result = this.generator.next(tickInput);
+        var result = this.generator.next(tickInput as any);
         if(result.value != undefined){
           this.result.push(result.value);
         }
@@ -63,7 +63,7 @@ export class ChandelierExit extends Indicator {
   static calculate = chandelierexit;
 
   nextValue(price:ChandelierExitInput):ChandelierExitOutput | undefined {
-     var result =  this.generator.next(price);
+     var result =  this.generator.next(price as any);
      if(result.value != undefined){
         return result.value;
       }

@@ -1,5 +1,5 @@
-import { MAInput } from './SMA';
-import { Indicator } from '../indicator/indicator';
+import { MAInput } from "./SMA";
+import { Indicator } from "../indicator/indicator";
 export declare class WilderSmoothing extends Indicator {
     period: number;
     price: number[];

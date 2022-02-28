@@ -46,7 +46,7 @@ export class SD extends Indicator {
     this.generator.next();
 
     priceArray.forEach((tick) => {
-      var result = this.generator.next(tick);
+      var result = this.generator.next(tick as any);
       if(result.value != undefined){
         this.result.push(this.format(result.value));
       }
@@ -56,7 +56,7 @@ export class SD extends Indicator {
   static calculate = sd;
 
     nextValue(price:number):number | undefined {
-        var nextResult = this.generator.next(price);
+        var nextResult = this.generator.next(price as any);
         if(nextResult.value != undefined)
           return this.format(nextResult.value);
     };

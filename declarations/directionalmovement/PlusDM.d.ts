@@ -1,4 +1,4 @@
-import { Indicator, IndicatorInput } from '../indicator/indicator';
+import { Indicator, IndicatorInput } from "../indicator/indicator";
 /**
  * Created by AAravindan on 5/8/16.
  */
