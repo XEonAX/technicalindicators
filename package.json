@@ -7,7 +7,6 @@
   "types": "./declarations/index.d.ts",
   "jsnext:main": "lib/index.js",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "cover": "babel-istanbul --include-all-sources cover -x dist/**/*.* ./node_modules/mocha/bin/_mocha -- -R spec && open coverage/lcov-report/index.html",
     "test": "mocha --compilers js:babel-register --require babel-polyfill",
     "test:watch": "mocha --watch --compilers js:babel-register --require babel-polyfill",
@@ -153,8 +152,5 @@
   },
   "dependencies": {
     "@types/node": "^6.0.96"
-  },
-  "resolutions": {
-    "rollup": "^1.26.3"
   }
 }
