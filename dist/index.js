@@ -3983,7 +3983,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// import * as tf from '@tensorflow/tfjs';
 var isNodeEnvironment = false;
 var model;
 var oneHotMap = ['IHS', 'TU', 'DB', 'HS', 'TD', 'DT'];

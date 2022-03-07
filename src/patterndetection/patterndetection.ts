@@ -1,6 +1,7 @@
 import { Indicator, IndicatorInput } from '../indicator/indicator';
 import { getConfig } from '../config';
-// import * as tf from '@tensorflow/tfjs';
+// @ts-ignore
+import * as tf from '@tensorflow/tfjs';
 
 var isNodeEnvironment = false;
 
@@ -11,7 +12,7 @@ declare var module;
 declare var __dirname;
 declare var global;
 declare var require;
-var tf; 
+var tf;
 
 try {
     isNodeEnvironment = Object.prototype.toString.call(global.process) === '[object process]' ;
