@@ -4,6 +4,7 @@ export { sma, SMA } from "./moving_averages/SMA";
 export { ema, EMA } from "./moving_averages/EMA";
 export { wma, WMA } from "./moving_averages/WMA";
 export { wema, WEMA } from "./moving_averages/WEMA";
+export { wildersmoothing, WilderSmoothing } from "./moving_averages/WilderSmoothing";
 export { macd, MACD } from "./moving_averages/MACD";
 export { rsi, RSI } from "./oscillators/RSI";
 export { bollingerbands, BollingerBands } from "./volatility/BollingerBands";

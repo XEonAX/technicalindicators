@@ -349,16 +349,16 @@ class EMA extends Indicator {
         super(input);
         var period = input.period;
         var priceArray = input.values;
-        var exponent = (2 / (period + 1));
+        var exponent = 2 / (period + 1);
         var sma$$1;
         this.result = [];
         sma$$1 = new SMA({ period: period, values: [] });
-        var genFn = (function* () {
+        var genFn = function* () {
             var tick = yield;
             var prevEma;
             while (true) {
                 if (prevEma !== undefined && tick !== undefined) {
-                    prevEma = ((tick - prevEma) * exponent) + prevEma;
+                    prevEma = (tick - prevEma) * exponent + prevEma;
                     tick = yield prevEma;
                 }
                 else {
@@ -368,7 +368,7 @@ class EMA extends Indicator {
                         tick = yield prevEma;
                 }
             }
-        });
+        };
         this.generator = genFn();
         this.generator.next();
         this.generator.next();
@@ -384,7 +384,6 @@ class EMA extends Indicator {
         if (result != undefined)
             return this.format(result);
     }
-    ;
 }
 EMA.calculate = ema;
 function ema(input) {
@@ -459,12 +458,12 @@ class WEMA extends Indicator {
         var sma$$1;
         this.result = [];
         sma$$1 = new SMA({ period: period, values: [] });
-        var genFn = (function* () {
+        var genFn = function* () {
             var tick = yield;
             var prevEma;
             while (true) {
                 if (prevEma !== undefined && tick !== undefined) {
-                    prevEma = ((tick - prevEma) * exponent) + prevEma;
+                    prevEma = (tick - prevEma) * exponent + prevEma;
                     tick = yield prevEma;
                 }
                 else {
@@ -474,7 +473,7 @@ class WEMA extends Indicator {
                         tick = yield prevEma;
                 }
             }
-        });
+        };
         this.generator = genFn();
         this.generator.next();
         this.generator.next();
@@ -490,7 +489,6 @@ class WEMA extends Indicator {
         if (result != undefined)
             return this.format(result);
     }
-    ;
 }
 WEMA.calculate = wema;
 function wema(input) {
@@ -503,6 +501,63 @@ function wema(input) {
     return result;
 }
 
+//STEP3. Add class based syntax with export
+class WilderSmoothing extends Indicator {
+    constructor(input) {
+        super(input);
+        this.period = input.period;
+        this.price = input.values;
+        var genFn = function* (period) {
+            var list = new LinkedList();
+            var sum = 0;
+            var counter = 1;
+            var current = yield;
+            var result = 0;
+            while (true) {
+                if (counter < period) {
+                    counter++;
+                    sum = sum + current;
+                    result = undefined;
+                }
+                else if (counter == period) {
+                    counter++;
+                    sum = sum + current;
+                    result = sum;
+                }
+                else {
+                    result = result - result / period + current;
+                }
+                current = yield result;
+            }
+        };
+        this.generator = genFn(this.period);
+        this.generator.next();
+        this.result = [];
+        this.price.forEach((tick) => {
+            var result = this.generator.next(tick);
+            if (result.value != undefined) {
+                this.result.push(this.format(result.value));
+            }
+        });
+    }
+    nextValue(price) {
+        var result = this.generator.next(price).value;
+        if (result != undefined)
+            return this.format(result);
+    }
+}
+WilderSmoothing.calculate = wildersmoothing;
+function wildersmoothing(input) {
+    Indicator.reverseInputs(input);
+    var result = new WilderSmoothing(input).result;
+    if (input.reversedInput) {
+        result.reverse();
+    }
+    Indicator.reverseInputs(input);
+    return result;
+}
+//STEP 6. Run the tests
+
 /**
  * Created by AAravindan on 5/4/16.
  */
@@ -513,9 +568,27 @@ class MACD extends Indicator {
         super(input);
         var oscillatorMAtype = input.SimpleMAOscillator ? SMA : EMA;
         var signalMAtype = input.SimpleMASignal ? SMA : EMA;
-        var fastMAProducer = new oscillatorMAtype({ period: input.fastPeriod, values: [], format: (v) => { return v; } });
-        var slowMAProducer = new oscillatorMAtype({ period: input.slowPeriod, values: [], format: (v) => { return v; } });
-        var signalMAProducer = new signalMAtype({ period: input.signalPeriod, values: [], format: (v) => { return v; } });
+        var fastMAProducer = new oscillatorMAtype({
+            period: input.fastPeriod,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        var slowMAProducer = new oscillatorMAtype({
+            period: input.slowPeriod,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        var signalMAProducer = new signalMAtype({
+            period: input.signalPeriod,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
         var format = this.format;
         this.result = [];
         this.generator = (function* () {
@@ -530,18 +603,19 @@ class MACD extends Indicator {
                     index++;
                     continue;
                 }
-                if (fast && slow) { //Just for typescript to be happy
+                if (fast && slow) {
+                    //Just for typescript to be happy
                     MACD = fast - slow;
                     signal = signalMAProducer.nextValue(MACD);
                 }
                 histogram = MACD - signal;
-                tick = yield ({
+                tick = yield {
                     //fast : fast,
                     //slow : slow,
                     MACD: format(MACD),
                     signal: signal ? format(signal) : undefined,
-                    histogram: isNaN(histogram) ? undefined : format(histogram)
-                });
+                    histogram: isNaN(histogram) ? undefined : format(histogram),
+                };
                 fast = fastMAProducer.nextValue(tick);
                 slow = slowMAProducer.nextValue(tick);
             }
@@ -558,7 +632,6 @@ class MACD extends Indicator {
         var result = this.generator.next(price).value;
         return result;
     }
-    ;
 }
 MACD.calculate = macd;
 function macd(input) {
@@ -598,10 +671,10 @@ class AverageGain extends Indicator {
                     avgGain = gainSum / period;
                 }
                 else {
-                    avgGain = ((avgGain * (period - 1)) + gain) / period;
+                    avgGain = (avgGain * (period - 1) + gain) / period;
                 }
                 lastValue = currentValue;
-                avgGain = (avgGain !== undefined) ? format(avgGain) : undefined;
+                avgGain = avgGain !== undefined ? format(avgGain) : undefined;
                 currentValue = yield avgGain;
             }
         })(period);
@@ -617,7 +690,6 @@ class AverageGain extends Indicator {
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 AverageGain.calculate = averagegain;
 function averagegain(input) {
@@ -657,10 +729,10 @@ class AverageLoss extends Indicator {
                     avgLoss = lossSum / period;
                 }
                 else {
-                    avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+                    avgLoss = (avgLoss * (period - 1) + loss) / period;
                 }
                 lastValue = currentValue;
-                avgLoss = (avgLoss !== undefined) ? format(avgLoss) : undefined;
+                avgLoss = avgLoss !== undefined ? format(avgLoss) : undefined;
                 currentValue = yield avgLoss;
             }
         })(period);
@@ -676,7 +748,6 @@ class AverageLoss extends Indicator {
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 AverageLoss.calculate = averageloss;
 function averageloss(input) {
@@ -707,7 +778,7 @@ class RSI extends Indicator {
             while (true) {
                 lastAvgGain = GainProvider.nextValue(current);
                 lastAvgLoss = LossProvider.nextValue(current);
-                if ((lastAvgGain !== undefined) && (lastAvgLoss !== undefined)) {
+                if (lastAvgGain !== undefined && lastAvgLoss !== undefined) {
                     if (lastAvgLoss === 0) {
                         currentRSI = 100;
                     }
@@ -717,7 +788,7 @@ class RSI extends Indicator {
                     else {
                         RS = lastAvgGain / lastAvgLoss;
                         RS = isNaN(RS) ? 0 : RS;
-                        currentRSI = parseFloat((100 - (100 / (1 + RS))).toFixed(2));
+                        currentRSI = parseFloat((100 - 100 / (1 + RS)).toFixed(2));
                     }
                 }
                 count++;
@@ -733,11 +804,9 @@ class RSI extends Indicator {
             }
         });
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 RSI.calculate = rsi;
 function rsi(input) {
@@ -862,65 +931,6 @@ function bollingerbands(input) {
     return result;
 }
 
-//STEP3. Add class based syntax with export
-class WilderSmoothing extends Indicator {
-    constructor(input) {
-        super(input);
-        this.period = input.period;
-        this.price = input.values;
-        var genFn = (function* (period) {
-            var list = new LinkedList();
-            var sum = 0;
-            var counter = 1;
-            var current = yield;
-            var result = 0;
-            while (true) {
-                if (counter < period) {
-                    counter++;
-                    sum = sum + current;
-                    result = undefined;
-                }
-                else if (counter == period) {
-                    counter++;
-                    sum = sum + current;
-                    result = sum;
-                }
-                else {
-                    result = result - (result / period) + current;
-                }
-                current = yield result;
-            }
-        });
-        this.generator = genFn(this.period);
-        this.generator.next();
-        this.result = [];
-        this.price.forEach((tick) => {
-            var result = this.generator.next(tick);
-            if (result.value != undefined) {
-                this.result.push(this.format(result.value));
-            }
-        });
-    }
-    nextValue(price) {
-        var result = this.generator.next(price).value;
-        if (result != undefined)
-            return this.format(result);
-    }
-    ;
-}
-WilderSmoothing.calculate = wildersmoothing;
-function wildersmoothing(input) {
-    Indicator.reverseInputs(input);
-    var result = new WilderSmoothing(input).result;
-    if (input.reversedInput) {
-        result.reverse();
-    }
-    Indicator.reverseInputs(input);
-    return result;
-}
-
-//STEP 6. Run the tests
-
 class MDM extends Indicator {
     constructor(input) {
         super(input);
@@ -928,7 +938,7 @@ class MDM extends Indicator {
         var highs = input.high;
         var format = this.format;
         if (lows.length != highs.length) {
-            throw ('Inputs(low,high) not of equal size');
+            throw "Inputs(low,high) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
@@ -937,9 +947,9 @@ class MDM extends Indicator {
             var last;
             while (true) {
                 if (last) {
-                    let upMove = (current.high - last.high);
-                    let downMove = (last.low - current.low);
-                    minusDm = format((downMove > upMove && downMove > 0) ? downMove : 0);
+                    let upMove = current.high - last.high;
+                    let downMove = last.low - current.low;
+                    minusDm = format(downMove > upMove && downMove > 0 ? downMove : 0);
                 }
                 last = current;
                 current = yield minusDm;
@@ -949,13 +959,12 @@ class MDM extends Indicator {
         lows.forEach((tick, index) => {
             var result = this.generator.next({
                 high: highs[index],
-                low: lows[index]
+                low: lows[index],
             });
             if (result.value !== undefined)
                 this.result.push(result.value);
         });
     }
-    ;
     static calculate(input) {
         Indicator.reverseInputs(input);
         var result = new MDM(input).result;
@@ -965,17 +974,14 @@ class MDM extends Indicator {
         Indicator.reverseInputs(input);
         return result;
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 
 /**
  * Created by AAravindan on 5/8/16.
  */
-
 
 class PDM extends Indicator {
     constructor(input) {
@@ -984,7 +990,7 @@ class PDM extends Indicator {
         var highs = input.high;
         var format = this.format;
         if (lows.length != highs.length) {
-            throw ('Inputs(low,high) not of equal size');
+            throw "Inputs(low,high) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
@@ -993,9 +999,9 @@ class PDM extends Indicator {
             var last;
             while (true) {
                 if (last) {
-                    let upMove = (current.high - last.high);
-                    let downMove = (last.low - current.low);
-                    plusDm = format((upMove > downMove && upMove > 0) ? upMove : 0);
+                    let upMove = current.high - last.high;
+                    let downMove = last.low - current.low;
+                    plusDm = format(upMove > downMove && upMove > 0 ? upMove : 0);
                 }
                 last = current;
                 current = yield plusDm;
@@ -1005,13 +1011,12 @@ class PDM extends Indicator {
         lows.forEach((tick, index) => {
             var result = this.generator.next({
                 high: highs[index],
-                low: lows[index]
+                low: lows[index],
             });
             if (result.value !== undefined)
                 this.result.push(result.value);
         });
     }
-    ;
     static calculate(input) {
         Indicator.reverseInputs(input);
         var result = new PDM(input).result;
@@ -1021,11 +1026,9 @@ class PDM extends Indicator {
         Indicator.reverseInputs(input);
         return result;
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 
 class TrueRange extends Indicator {
@@ -1036,7 +1039,7 @@ class TrueRange extends Indicator {
         var closes = input.close;
         var format = this.format;
         if (lows.length != highs.length) {
-            throw ('Inputs(low,high) not of equal size');
+            throw "Inputs(low,high) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
@@ -1047,7 +1050,11 @@ class TrueRange extends Indicator {
                     previousClose = current.close;
                     current = yield result;
                 }
-                result = Math.max(current.high - current.low, isNaN(Math.abs(current.high - previousClose)) ? 0 : Math.abs(current.high - previousClose), isNaN(Math.abs(current.low - previousClose)) ? 0 : Math.abs(current.low - previousClose));
+                result = Math.max(current.high - current.low, isNaN(Math.abs(current.high - previousClose))
+                    ? 0
+                    : Math.abs(current.high - previousClose), isNaN(Math.abs(current.low - previousClose))
+                    ? 0
+                    : Math.abs(current.low - previousClose));
                 previousClose = current.close;
                 if (result != undefined) {
                     result = format(result);
@@ -1060,18 +1067,16 @@ class TrueRange extends Indicator {
             var result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
-                close: closes[index]
+                close: closes[index],
             });
             if (result.value != undefined) {
                 this.result.push(result.value);
             }
         });
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 TrueRange.calculate = truerange;
 function truerange(input) {
@@ -1086,7 +1091,6 @@ function truerange(input) {
 
 class ADXOutput extends IndicatorInput {
 }
-
 class ADX extends Indicator {
     constructor(input) {
         super(input);
@@ -1097,23 +1101,47 @@ class ADX extends Indicator {
         var format = this.format;
         var plusDM = new PDM({
             high: [],
-            low: []
+            low: [],
         });
         var minusDM = new MDM({
             high: [],
-            low: []
+            low: [],
         });
-        var emaPDM = new WilderSmoothing({ period: period, values: [], format: (v) => { return v; } });
-        var emaMDM = new WilderSmoothing({ period: period, values: [], format: (v) => { return v; } });
-        var emaTR = new WilderSmoothing({ period: period, values: [], format: (v) => { return v; } });
-        var emaDX = new WEMA({ period: period, values: [], format: (v) => { return v; } });
+        var emaPDM = new WilderSmoothing({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        var emaMDM = new WilderSmoothing({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        var emaTR = new WilderSmoothing({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        var emaDX = new WEMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
         var tr = new TrueRange({
             low: [],
             high: [],
             close: [],
         });
-        if (!((lows.length === highs.length) && (highs.length === closes.length))) {
-            throw ('Inputs(low,high, close) not of equal size');
+        if (!(lows.length === highs.length && highs.length === closes.length)) {
+            throw "Inputs(low,high, close) not of equal size";
         }
         this.result = [];
         ADXOutput;
@@ -1135,11 +1163,13 @@ class ADX extends Indicator {
                 let lastATR = emaTR.nextValue(calcTr);
                 let lastAPDM = emaPDM.nextValue(calcPDM);
                 let lastAMDM = emaMDM.nextValue(calcMDM);
-                if ((lastATR != undefined) && (lastAPDM != undefined) && (lastAMDM != undefined)) {
-                    lastPDI = (lastAPDM) * 100 / lastATR;
-                    lastMDI = (lastAMDM) * 100 / lastATR;
+                if (lastATR != undefined &&
+                    lastAPDM != undefined &&
+                    lastAMDM != undefined) {
+                    lastPDI = (lastAPDM * 100) / lastATR;
+                    lastMDI = (lastAMDM * 100) / lastATR;
                     let diDiff = Math.abs(lastPDI - lastMDI);
-                    let diSum = (lastPDI + lastMDI);
+                    let diSum = lastPDI + lastMDI;
                     lastDX = (diDiff / diSum) * 100;
                     smoothedDX = emaDX.nextValue(lastDX);
                     // console.log(tick.high.toFixed(2), tick.low.toFixed(2), tick.close.toFixed(2) , calcTr.toFixed(2), calcPDM.toFixed(2), calcMDM.toFixed(2), lastATR.toFixed(2), lastAPDM.toFixed(2), lastAMDM.toFixed(2), lastPDI.toFixed(2), lastMDI.toFixed(2), diDiff.toFixed(2), diSum.toFixed(2), lastDX.toFixed(2));
@@ -1152,22 +1182,27 @@ class ADX extends Indicator {
             var result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
-                close: closes[index]
+                close: closes[index],
             });
             if (result.value != undefined && result.value.adx != undefined) {
-                this.result.push({ adx: format(result.value.adx), pdi: format(result.value.pdi), mdi: format(result.value.mdi) });
+                this.result.push({
+                    adx: format(result.value.adx),
+                    pdi: format(result.value.pdi),
+                    mdi: format(result.value.mdi),
+                });
             }
         });
     }
-    ;
-    ;
     nextValue(price) {
         let result = this.generator.next(price).value;
         if (result != undefined && result.adx != undefined) {
-            return { adx: this.format(result.adx), pdi: this.format(result.pdi), mdi: this.format(result.mdi) };
+            return {
+                adx: this.format(result.adx),
+                pdi: this.format(result.pdi),
+                mdi: this.format(result.mdi),
+            };
         }
     }
-    ;
 }
 ADX.calculate = adx;
 function adx(input) {
@@ -1188,25 +1223,30 @@ class ATR extends Indicator {
         var closes = input.close;
         var period = input.period;
         var format = this.format;
-        if (!((lows.length === highs.length) && (highs.length === closes.length))) {
-            throw ('Inputs(low,high, close) not of equal size');
+        if (!(lows.length === highs.length && highs.length === closes.length)) {
+            throw "Inputs(low,high, close) not of equal size";
         }
         var trueRange = new TrueRange({
             low: [],
             high: [],
-            close: []
+            close: [],
         });
-        var wema$$1 = new WEMA({ period: period, values: [], format: (v) => { return v; } });
+        var wema$$1 = new WEMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
         this.result = [];
         this.generator = (function* () {
             var tick = yield;
             var avgTrueRange, trange;
-            
             while (true) {
                 trange = trueRange.nextValue({
                     low: tick.low,
                     high: tick.high,
-                    close: tick.close
+                    close: tick.close,
                 });
                 if (trange === undefined) {
                     avgTrueRange = undefined;
@@ -1222,18 +1262,16 @@ class ATR extends Indicator {
             var result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
-                close: closes[index]
+                close: closes[index],
             });
             if (result.value !== undefined) {
                 this.result.push(format(result.value));
             }
         });
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 ATR.calculate = atr;
 function atr(input) {
@@ -1255,7 +1293,6 @@ class ROC extends Indicator {
         this.generator = (function* () {
             let index = 1;
             var pastPeriods = new FixedSizeLinkedList(period);
-            
             var tick = yield;
             var roc;
             while (true) {
@@ -1264,7 +1301,10 @@ class ROC extends Indicator {
                     index++;
                 }
                 else {
-                    roc = ((tick - pastPeriods.lastShift) / (pastPeriods.lastShift)) * 100;
+                    roc =
+                        ((tick - pastPeriods.lastShift) /
+                            pastPeriods.lastShift) *
+                            100;
                 }
                 tick = yield roc;
             }
@@ -1272,21 +1312,19 @@ class ROC extends Indicator {
         this.generator.next();
         priceArray.forEach((tick) => {
             var result = this.generator.next(tick);
-            if (result.value != undefined && (!isNaN(result.value))) {
+            if (result.value != undefined && !isNaN(result.value)) {
                 this.result.push(this.format(result.value));
             }
         });
     }
     nextValue(price) {
         var nextResult = this.generator.next(price);
-        if (nextResult.value != undefined && (!isNaN(nextResult.value))) {
+        if (nextResult.value != undefined && !isNaN(nextResult.value)) {
             return this.format(nextResult.value);
         }
     }
-    ;
 }
 ROC.calculate = roc;
-
 function roc(input) {
     Indicator.reverseInputs(input);
     var result = new ROC(input).result;
@@ -1314,11 +1352,41 @@ class KST extends Indicator {
         let roc2 = new ROC({ period: rocPer2, values: [] });
         let roc3 = new ROC({ period: rocPer3, values: [] });
         let roc4 = new ROC({ period: rocPer4, values: [] });
-        let sma1 = new SMA({ period: smaPer1, values: [], format: (v) => { return v; } });
-        let sma2 = new SMA({ period: smaPer2, values: [], format: (v) => { return v; } });
-        let sma3 = new SMA({ period: smaPer3, values: [], format: (v) => { return v; } });
-        let sma4 = new SMA({ period: smaPer4, values: [], format: (v) => { return v; } });
-        let signalSMA = new SMA({ period: signalPeriod, values: [], format: (v) => { return v; } });
+        let sma1 = new SMA({
+            period: smaPer1,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let sma2 = new SMA({
+            period: smaPer2,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let sma3 = new SMA({
+            period: smaPer3,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let sma4 = new SMA({
+            period: smaPer4,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let signalSMA = new SMA({
+            period: signalPeriod,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
         var format = this.format;
         this.result = [];
         let firstResult = Math.max(rocPer1 + smaPer1, rocPer2 + smaPer2, rocPer3 + smaPer3, rocPer4 + smaPer4);
@@ -1332,21 +1400,37 @@ class KST extends Indicator {
                 let roc2Result = roc2.nextValue(tick);
                 let roc3Result = roc3.nextValue(tick);
                 let roc4Result = roc4.nextValue(tick);
-                RCMA1 = (roc1Result !== undefined) ? sma1.nextValue(roc1Result) : undefined;
-                RCMA2 = (roc2Result !== undefined) ? sma2.nextValue(roc2Result) : undefined;
-                RCMA3 = (roc3Result !== undefined) ? sma3.nextValue(roc3Result) : undefined;
-                RCMA4 = (roc4Result !== undefined) ? sma4.nextValue(roc4Result) : undefined;
+                RCMA1 =
+                    roc1Result !== undefined
+                        ? sma1.nextValue(roc1Result)
+                        : undefined;
+                RCMA2 =
+                    roc2Result !== undefined
+                        ? sma2.nextValue(roc2Result)
+                        : undefined;
+                RCMA3 =
+                    roc3Result !== undefined
+                        ? sma3.nextValue(roc3Result)
+                        : undefined;
+                RCMA4 =
+                    roc4Result !== undefined
+                        ? sma4.nextValue(roc4Result)
+                        : undefined;
                 if (index < firstResult) {
                     index++;
                 }
                 else {
-                    kst = (RCMA1 * 1) + (RCMA2 * 2) + (RCMA3 * 3) + (RCMA4 * 4);
+                    kst = RCMA1 * 1 + RCMA2 * 2 + RCMA3 * 3 + RCMA4 * 4;
                 }
-                signal = (kst !== undefined) ? signalSMA.nextValue(kst) : undefined;
-                result = kst !== undefined ? {
-                    kst: format(kst),
-                    signal: signal ? format(signal) : undefined
-                } : undefined;
+                signal =
+                    kst !== undefined ? signalSMA.nextValue(kst) : undefined;
+                result =
+                    kst !== undefined
+                        ? {
+                            kst: format(kst),
+                            signal: signal ? format(signal) : undefined,
+                        }
+                        : undefined;
                 tick = yield result;
             }
         })();
@@ -1358,13 +1442,11 @@ class KST extends Indicator {
             }
         });
     }
-    ;
     nextValue(price) {
         let nextResult = this.generator.next(price);
         if (nextResult.value != undefined)
             return nextResult.value;
     }
-    ;
 }
 KST.calculate = kst;
 function kst(input) {
@@ -1409,7 +1491,6 @@ function kst(input) {
   ----------------------------------------------------------------------------------------
 */
 
-
 class PSAR extends Indicator {
     constructor(input) {
         super(input);
@@ -1429,7 +1510,6 @@ class PSAR extends Indicator {
                             extreme = curr.high;
                             accel = Math.min(accel + step, max);
                         }
-                        
                     }
                     else {
                         sar = Math.max(sar, furthest.high, prev.high);
@@ -1469,13 +1549,11 @@ class PSAR extends Indicator {
             }
         });
     }
-    ;
     nextValue(input) {
         let nextResult = this.generator.next(input);
         if (nextResult.value !== undefined)
             return nextResult.value;
     }
-    ;
 }
 PSAR.calculate = psar;
 function psar(input) {
@@ -1575,8 +1653,8 @@ class WilliamsR extends Indicator {
         let closes = input.close;
         let period = input.period;
         let format = this.format;
-        if (!((lows.length === highs.length) && (highs.length === closes.length))) {
-            throw ('Inputs(low,high, close) not of equal size');
+        if (!(lows.length === highs.length && highs.length === closes.length)) {
+            throw "Inputs(low,high, close) not of equal size";
         }
         this.result = [];
         //%R = (Highest High - Close)/(Highest High - Lowest Low) * -100
@@ -1601,7 +1679,8 @@ class WilliamsR extends Indicator {
                 }
                 periodLow = pastLowPeriods.periodLow;
                 periodHigh = pastHighPeriods.periodHigh;
-                williamsR = format((periodHigh - tick.close) / (periodHigh - periodLow) * -100);
+                williamsR = format(((periodHigh - tick.close) / (periodHigh - periodLow)) *
+                    -100);
                 tick = yield williamsR;
             }
         })();
@@ -1610,20 +1689,18 @@ class WilliamsR extends Indicator {
             var result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
-                close: closes[index]
+                close: closes[index],
             });
             if (result.value !== undefined) {
                 this.result.push(result.value);
             }
         });
     }
-    ;
     nextValue(price) {
         var nextResult = this.generator.next(price);
         if (nextResult.value != undefined)
             return this.format(nextResult.value);
     }
-    ;
 }
 WilliamsR.calculate = williamsr;
 function williamsr(input) {
@@ -1647,8 +1724,10 @@ class ADL extends Indicator {
         var lows = input.low;
         var closes = input.close;
         var volumes = input.volume;
-        if (!((lows.length === highs.length) && (highs.length === closes.length) && (highs.length === volumes.length))) {
-            throw ('Inputs(low,high, close, volumes) not of equal size');
+        if (!(lows.length === highs.length &&
+            highs.length === closes.length &&
+            highs.length === volumes.length)) {
+            throw "Inputs(low,high, close, volumes) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
@@ -1656,8 +1735,11 @@ class ADL extends Indicator {
             var tick;
             tick = yield;
             while (true) {
-                let moneyFlowMultiplier = ((tick.close - tick.low) - (tick.high - tick.close)) / (tick.high - tick.low);
-                moneyFlowMultiplier = isNaN(moneyFlowMultiplier) ? 1 : moneyFlowMultiplier;
+                let moneyFlowMultiplier = (tick.close - tick.low - (tick.high - tick.close)) /
+                    (tick.high - tick.low);
+                moneyFlowMultiplier = isNaN(moneyFlowMultiplier)
+                    ? 1
+                    : moneyFlowMultiplier;
                 let moneyFlowVolume = moneyFlowMultiplier * tick.volume;
                 result = result + moneyFlowVolume;
                 tick = yield Math.round(result);
@@ -1669,7 +1751,7 @@ class ADL extends Indicator {
                 high: tickHigh,
                 low: lows[index],
                 close: closes[index],
-                volume: volumes[index]
+                volume: volumes[index],
             };
             var result = this.generator.next(tickInput);
             if (result.value != undefined) {
@@ -1677,11 +1759,9 @@ class ADL extends Indicator {
             }
         });
     }
-    ;
     nextValue(price) {
         return this.generator.next(price).value;
     }
-    ;
 }
 ADL.calculate = adl;
 function adl(input) {
@@ -1752,25 +1832,54 @@ function obv(input) {
  * Created by AAravindan on 5/9/16.
  */
 
-
 class TRIX extends Indicator {
     constructor(input) {
         super(input);
         let priceArray = input.values;
         let period = input.period;
         let format = this.format;
-        let ema$$1 = new EMA({ period: period, values: [], format: (v) => { return v; } });
-        let emaOfema = new EMA({ period: period, values: [], format: (v) => { return v; } });
-        let emaOfemaOfema = new EMA({ period: period, values: [], format: (v) => { return v; } });
-        let trixROC = new ROC({ period: 1, values: [], format: (v) => { return v; } });
+        let ema$$1 = new EMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let emaOfema = new EMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let emaOfemaOfema = new EMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        let trixROC = new ROC({
+            period: 1,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
         this.result = [];
         this.generator = (function* () {
             let tick = yield;
             while (true) {
                 let initialema = ema$$1.nextValue(tick);
-                let smoothedResult = initialema ? emaOfema.nextValue(initialema) : undefined;
-                let doubleSmoothedResult = smoothedResult ? emaOfemaOfema.nextValue(smoothedResult) : undefined;
-                let result = doubleSmoothedResult ? trixROC.nextValue(doubleSmoothedResult) : undefined;
+                let smoothedResult = initialema
+                    ? emaOfema.nextValue(initialema)
+                    : undefined;
+                let doubleSmoothedResult = smoothedResult
+                    ? emaOfemaOfema.nextValue(smoothedResult)
+                    : undefined;
+                let result = doubleSmoothedResult
+                    ? trixROC.nextValue(doubleSmoothedResult)
+                    : undefined;
                 tick = yield result ? format(result) : undefined;
             }
         })();
@@ -1787,7 +1896,6 @@ class TRIX extends Indicator {
         if (nextResult.value !== undefined)
             return nextResult.value;
     }
-    ;
 }
 TRIX.calculate = trix;
 function trix(input) {
@@ -1806,8 +1914,8 @@ class ForceIndex extends Indicator {
         var closes = input.close;
         var volumes = input.volume;
         var period = input.period || 1;
-        if (!((volumes.length === closes.length))) {
-            throw ('Inputs(volume, close) not of equal size');
+        if (!(volumes.length === closes.length)) {
+            throw "Inputs(volume, close) not of equal size";
         }
         let emaForceIndex = new EMA({ values: [], period: period });
         this.result = [];
@@ -1825,22 +1933,19 @@ class ForceIndex extends Indicator {
         volumes.forEach((tick, index) => {
             var result = this.generator.next({
                 close: closes[index],
-                volume: volumes[index]
+                volume: volumes[index],
             });
             if (result.value != undefined) {
                 this.result.push(result.value);
             }
         });
     }
-    ;
-    ;
     nextValue(price) {
         let result = this.generator.next(price).value;
         if (result != undefined) {
             return result;
         }
     }
-    ;
 }
 ForceIndex.calculate = forceindex;
 function forceindex(input) {
@@ -1861,12 +1966,17 @@ class CCI extends Indicator {
         var closes = input.close;
         var period = input.period;
         var format = this.format;
-        let constant = .015;
+        let constant = 0.015;
         var currentTpSet = new FixedSizeLinkedList(period);
-        
-        var tpSMACalculator = new SMA({ period: period, values: [], format: (v) => { return v; } });
-        if (!((lows.length === highs.length) && (highs.length === closes.length))) {
-            throw ('Inputs(low,high, close) not of equal size');
+        var tpSMACalculator = new SMA({
+            period: period,
+            values: [],
+            format: (v) => {
+                return v;
+            },
+        });
+        if (!(lows.length === highs.length && highs.length === closes.length)) {
+            throw "Inputs(low,high, close) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
@@ -1879,13 +1989,13 @@ class CCI extends Indicator {
                 let cci;
                 let sum = 0;
                 if (smaTp != undefined) {
-                    //First, subtract the most recent 20-period average of the typical price from each period's typical price. 
+                    //First, subtract the most recent 20-period average of the typical price from each period's typical price.
                     //Second, take the absolute values of these numbers.
-                    //Third,sum the absolute values. 
+                    //Third,sum the absolute values.
                     for (let x of currentTpSet.iterator()) {
-                        sum = sum + (Math.abs(x - smaTp));
+                        sum = sum + Math.abs(x - smaTp);
                     }
-                    //Fourth, divide by the total number of periods (20). 
+                    //Fourth, divide by the total number of periods (20).
                     meanDeviation = sum / period;
                     cci = (tp - smaTp) / (constant * meanDeviation);
                 }
@@ -1897,22 +2007,19 @@ class CCI extends Indicator {
             var result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
-                close: closes[index]
+                close: closes[index],
             });
             if (result.value != undefined) {
                 this.result.push(result.value);
             }
         });
     }
-    ;
-    ;
     nextValue(price) {
         let result = this.generator.next(price).value;
         if (result != undefined) {
             return result;
         }
     }
-    ;
 }
 CCI.calculate = cci;
 function cci(input) {
@@ -1964,14 +2071,12 @@ class AwesomeOscillator extends Indicator {
             }
         });
     }
-    ;
     nextValue(price) {
         var result = this.generator.next(price);
         if (result.value != undefined) {
             return this.format(result.value);
         }
     }
-    ;
 }
 AwesomeOscillator.calculate = awesomeoscillator;
 function awesomeoscillator(input) {
@@ -1992,12 +2097,12 @@ class VWAP extends Indicator {
         var closes = input.close;
         var volumes = input.volume;
         var format = this.format;
-        if (!((lows.length === highs.length) && (highs.length === closes.length))) {
-            throw ('Inputs(low,high, close) not of equal size');
+        if (!(lows.length === highs.length && highs.length === closes.length)) {
+            throw "Inputs(low,high, close) not of equal size";
         }
         this.result = [];
         this.generator = (function* () {
-            var tick = yield;
+            let tick = yield;
             let cumulativeTotal = 0;
             let cumulativeVolume = 0;
             while (true) {
@@ -2006,31 +2111,27 @@ class VWAP extends Indicator {
                 cumulativeTotal = cumulativeTotal + total;
                 cumulativeVolume = cumulativeVolume + tick.volume;
                 tick = yield cumulativeTotal / cumulativeVolume;
-                
             }
         })();
         this.generator.next();
         lows.forEach((tick, index) => {
-            var result = this.generator.next({
+            let result = this.generator.next({
                 high: highs[index],
                 low: lows[index],
                 close: closes[index],
-                volume: volumes[index]
+                volume: volumes[index],
             });
             if (result.value != undefined) {
                 this.result.push(result.value);
             }
         });
     }
-    ;
-    ;
     nextValue(price) {
         let result = this.generator.next(price).value;
         if (result != undefined) {
             return result;
         }
     }
-    ;
 }
 VWAP.calculate = vwap;
 function vwap(input) {
@@ -2119,7 +2220,10 @@ class TypicalPrice extends Indicator {
         this.generator = (function* () {
             let priceInput = yield;
             while (true) {
-                priceInput = yield (priceInput.high + priceInput.low + priceInput.close) / 3;
+                priceInput = yield (priceInput.high +
+                    priceInput.low +
+                    priceInput.close) /
+                    3;
             }
         })();
         this.generator.next();
@@ -2136,7 +2240,6 @@ class TypicalPrice extends Indicator {
         var result = this.generator.next(price).value;
         return result;
     }
-    ;
 }
 TypicalPrice.calculate = typicalprice;
 function typicalprice(input) {
@@ -2249,26 +2352,39 @@ class StochasticRSI extends Indicator {
         this.generator = (function* () {
             let index = 1;
             let rsi$$1 = new RSI({ period: rsiPeriod, values: [] });
-            let stochastic$$1 = new Stochastic({ period: stochasticPeriod, high: [], low: [], close: [], signalPeriod: kPeriod });
+            let stochastic$$1 = new Stochastic({
+                period: stochasticPeriod,
+                high: [],
+                low: [],
+                close: [],
+                signalPeriod: kPeriod,
+            });
             let dSma = new SMA({
                 period: dPeriod,
                 values: [],
-                format: (v) => { return v; }
+                format: (v) => {
+                    return v;
+                },
             });
             let lastRSI, stochasticRSI, d, result;
             var tick = yield;
             while (true) {
                 lastRSI = rsi$$1.nextValue(tick);
                 if (lastRSI !== undefined) {
-                    var stochasticInput = { high: lastRSI, low: lastRSI, close: lastRSI };
+                    var stochasticInput = {
+                        high: lastRSI,
+                        low: lastRSI,
+                        close: lastRSI,
+                    };
                     stochasticRSI = stochastic$$1.nextValue(stochasticInput);
-                    if (stochasticRSI !== undefined && stochasticRSI.d !== undefined) {
+                    if (stochasticRSI !== undefined &&
+                        stochasticRSI.d !== undefined) {
                         d = dSma.nextValue(stochasticRSI.d);
                         if (d !== undefined)
                             result = {
                                 stochRSI: stochasticRSI.k,
                                 k: stochasticRSI.d,
-                                d: d
+                                d: d,
                             };
                     }
                 }
@@ -2283,13 +2399,11 @@ class StochasticRSI extends Indicator {
             }
         });
     }
-    ;
     nextValue(input) {
         let nextResult = this.generator.next(input);
         if (nextResult.value !== undefined)
             return nextResult.value;
     }
-    ;
 }
 StochasticRSI.calculate = stochasticrsi;
 function stochasticrsi(input) {
@@ -2461,9 +2575,8 @@ class Renko extends Indicator {
             brickSize = atrResult[atrResult.length - 1];
         }
         this.result = new CandleList();
-        
         if (brickSize === 0) {
-            console.error('Not enough data to calculate brickSize for renko when using ATR');
+            console.error("Not enough data to calculate brickSize for renko when using ATR");
             return;
         }
         let lastOpen = 0;
@@ -2488,15 +2601,22 @@ class Renko extends Indicator {
                 }
                 let absoluteMovementFromClose = Math.abs(candleData.close - lastClose);
                 let absoluteMovementFromOpen = Math.abs(candleData.close - lastOpen);
-                if ((absoluteMovementFromClose >= brickSize) && (absoluteMovementFromOpen >= brickSize)) {
-                    let reference = absoluteMovementFromClose > absoluteMovementFromOpen ? lastOpen : lastClose;
+                if (absoluteMovementFromClose >= brickSize &&
+                    absoluteMovementFromOpen >= brickSize) {
+                    let reference = absoluteMovementFromClose > absoluteMovementFromOpen
+                        ? lastOpen
+                        : lastClose;
                     let calculated = {
                         open: reference,
-                        high: lastHigh > candleData.high ? lastHigh : candleData.high,
-                        low: lastLow < candleData.Low ? lastLow : candleData.low,
-                        close: reference > candleData.close ? (reference - brickSize) : (reference + brickSize),
+                        high: lastHigh > candleData.high
+                            ? lastHigh
+                            : candleData.high,
+                        low: lastLow < candleData.low ? lastLow : candleData.low,
+                        close: reference > candleData.close
+                            ? reference - brickSize
+                            : reference + brickSize,
                         volume: lastVolume + candleData.volume,
-                        timestamp: candleData.timestamp
+                        timestamp: candleData.timestamp,
                     };
                     lastOpen = calculated.open;
                     lastHigh = calculated.close;
@@ -2506,8 +2626,10 @@ class Renko extends Indicator {
                     candleData = yield calculated;
                 }
                 else {
-                    lastHigh = lastHigh > candleData.high ? lastHigh : candleData.high;
-                    lastLow = lastLow < candleData.Low ? lastLow : candleData.low;
+                    lastHigh =
+                        lastHigh > candleData.high ? lastHigh : candleData.high;
+                    lastLow =
+                        lastLow < candleData.low ? lastLow : candleData.low;
                     lastVolume = lastVolume + candleData.volume;
                     lastTimestamp = candleData.timestamp;
                     candleData = yield;
@@ -2522,7 +2644,7 @@ class Renko extends Indicator {
                 low: input.low[index],
                 close: input.close[index],
                 volume: input.volume[index],
-                timestamp: input.timestamp[index]
+                timestamp: input.timestamp[index],
             });
             if (result.value) {
                 this.result.open.push(result.value.open);
@@ -2535,10 +2657,9 @@ class Renko extends Indicator {
         });
     }
     nextValue(price) {
-        console.error('Cannot calculate next value on Renko, Every value has to be recomputed for every change, use calcualte method');
+        console.error("Cannot calculate next value on Renko, Every value has to be recomputed for every change, use calcualte method");
         return null;
     }
-    ;
 }
 Renko.calculate = renko;
 function renko(input) {
@@ -2579,20 +2700,29 @@ class HeikinAshi extends Indicator {
                     lastOpen = (candleData.close + candleData.open) / 2;
                     lastHigh = candleData.high;
                     lastLow = candleData.low;
-                    lastClose = (candleData.close + candleData.open + candleData.high + candleData.low) / 4;
-                    lastVolume = (candleData.volume || 0);
-                    lastTimestamp = (candleData.timestamp || 0);
+                    lastClose =
+                        (candleData.close +
+                            candleData.open +
+                            candleData.high +
+                            candleData.low) /
+                            4;
+                    lastVolume = candleData.volume || 0;
+                    lastTimestamp = candleData.timestamp || 0;
                     calculated = {
                         open: lastOpen,
                         high: lastHigh,
                         low: lastLow,
                         close: lastClose,
                         volume: candleData.volume || 0,
-                        timestamp: (candleData.timestamp || 0)
+                        timestamp: candleData.timestamp || 0,
                     };
                 }
                 else {
-                    let newClose = (candleData.close + candleData.open + candleData.high + candleData.low) / 4;
+                    let newClose = (candleData.close +
+                        candleData.open +
+                        candleData.high +
+                        candleData.low) /
+                        4;
                     let newOpen = (lastOpen + lastClose) / 2;
                     let newHigh = Math.max(newOpen, newClose, candleData.high);
                     let newLow = Math.min(candleData.low, newOpen, newClose);
@@ -2601,8 +2731,8 @@ class HeikinAshi extends Indicator {
                         open: newOpen,
                         high: newHigh,
                         low: newLow,
-                        volume: (candleData.volume || 0),
-                        timestamp: (candleData.timestamp || 0)
+                        volume: candleData.volume || 0,
+                        timestamp: candleData.timestamp || 0,
                     };
                     lastClose = newClose;
                     lastOpen = newOpen;
@@ -2620,7 +2750,9 @@ class HeikinAshi extends Indicator {
                 low: input.low[index],
                 close: input.close[index],
                 volume: input.volume ? input.volume[index] : input.volume,
-                timestamp: input.timestamp ? input.timestamp[index] : input.timestamp
+                timestamp: input.timestamp
+                    ? input.timestamp[index]
+                    : input.timestamp,
             });
             if (result.value) {
                 this.result.open.push(result.value.open);
@@ -2636,7 +2768,6 @@ class HeikinAshi extends Indicator {
         var result = this.generator.next(price).value;
         return result;
     }
-    ;
 }
 HeikinAshi.calculate = heikinashi;
 function heikinashi(input) {
@@ -3844,6 +3975,165 @@ function fibonacciretracement(start, end) {
     return retracements;
 }
 
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+// import * as tf from '@tensorflow/tfjs';
+var isNodeEnvironment = false;
+var model;
+var oneHotMap = ['IHS', 'TU', 'DB', 'HS', 'TD', 'DT'];
+var tf;
+try {
+    isNodeEnvironment = Object.prototype.toString.call(global.process) === '[object process]';
+}
+catch (e) { }
+
+
+(function (AvailablePatterns) {
+    AvailablePatterns[AvailablePatterns["IHS"] = 0] = "IHS";
+    AvailablePatterns[AvailablePatterns["TU"] = 1] = "TU";
+    AvailablePatterns[AvailablePatterns["DB"] = 2] = "DB";
+    AvailablePatterns[AvailablePatterns["HS"] = 3] = "HS";
+    AvailablePatterns[AvailablePatterns["TD"] = 4] = "TD";
+    AvailablePatterns[AvailablePatterns["DT"] = 5] = "DT";
+})(exports.AvailablePatterns || (exports.AvailablePatterns = {}));
+function interpolateArray(data, fitCount) {
+    var linearInterpolate = function (before, after, atPoint) {
+        return before + (after - before) * atPoint;
+    };
+    var newData = new Array();
+    var springFactor = new Number((data.length - 1) / (fitCount - 1));
+    newData[0] = data[0]; // for new allocation
+    for (var i = 1; i < fitCount - 1; i++) {
+        var tmp = i * springFactor;
+        var before = new Number(Math.floor(tmp)).toFixed();
+        var after = new Number(Math.ceil(tmp)).toFixed();
+        var atPoint = tmp - before;
+        newData[i] = linearInterpolate(data[before], data[after], atPoint);
+    }
+    newData[fitCount - 1] = data[data.length - 1]; // for new allocation
+    return newData;
+}
+
+function l2Normalize(arr) {
+    var sum = arr.reduce((cum, value) => { return cum + (value * value); }, 0);
+    var norm = Math.sqrt(sum);
+    return arr.map((v) => v / norm);
+}
+
+var modelLoaded = false;
+var laodingModel = false;
+var loadingPromise;
+function loadModel() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (modelLoaded)
+            return Promise.resolve(true);
+        if (laodingModel)
+            return loadingPromise;
+        laodingModel = true;
+        loadingPromise = new Promise(function (resolve, reject) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (isNodeEnvironment) {
+                    tf = require('@tensorflow/tfjs');
+                    console.log('Nodejs Environment detected ');
+                    var tfnode = require('@tensorflow/tfjs-node');
+                    var modelPath = require('path').resolve(__dirname, '../tf_model/model.json');
+                    model = yield tf.loadModel(tfnode.io.fileSystem(modelPath));
+                }
+                else {
+                    if (typeof window.tf == "undefined") {
+                        modelLoaded = false;
+                        laodingModel = false;
+                        console.log('Tensorflow js not imported, pattern detection may not work');
+                        resolve(true);
+                        return;
+                    }
+                    tf = window.tf;
+                    console.log('Browser Environment detected ', tf);
+                    console.log('Loading model ....');
+                    model = yield tf.loadModel('/tf_model/model.json');
+                    modelLoaded = true;
+                    laodingModel = false;
+                    setTimeout(resolve, 1000);
+                    console.log('Loaded model');
+                    return;
+                }
+                modelLoaded = true;
+                laodingModel = false;
+                resolve(true);
+                return;
+            });
+        });
+        yield loadingPromise;
+        return;
+    });
+}
+loadModel();
+function predictPattern(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield loadModel();
+        if (input.values.length < 300) {
+            console.warn('Pattern detector requires atleast 300 data points for a reliable prediction, received just ', input.values.length);
+        }
+        Indicator.reverseInputs(input);
+        var values = input.values;
+        var output = yield model.predict(tf.tensor2d([l2Normalize(interpolateArray(values, 400))]));
+        var index = tf.argMax(output, 1).get(0);
+        Indicator.reverseInputs(input);
+        return { patternId: index, pattern: oneHotMap[index], probability: output.get(0, 4) * 100 };
+    });
+}
+function hasDoubleBottom(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.DB);
+    });
+}
+function hasDoubleTop(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.DT);
+    });
+}
+function hasHeadAndShoulder(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.HS);
+    });
+}
+function hasInverseHeadAndShoulder(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.IHS);
+    });
+}
+function isTrendingUp(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.TU);
+    });
+}
+function isTrendingDown(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var result = yield predictPattern(input);
+        return (result.patternId === exports.AvailablePatterns.TD);
+    });
+}
+class PatternDetector extends Indicator {
+}
+PatternDetector.predictPattern = predictPattern;
+PatternDetector.hasDoubleBottom = hasDoubleBottom;
+PatternDetector.hasDoubleTop = hasDoubleTop;
+PatternDetector.hasHeadAndShoulder = hasHeadAndShoulder;
+PatternDetector.hasInverseHeadAndShoulder = hasInverseHeadAndShoulder;
+PatternDetector.isTrendingUp = isTrendingUp;
+PatternDetector.isTrendingDown = isTrendingDown;
+
 class IchimokuCloud extends Indicator {
     constructor(input) {
         super(input);
@@ -3852,7 +4142,7 @@ class IchimokuCloud extends Indicator {
             conversionPeriod: 9,
             basePeriod: 26,
             spanPeriod: 52,
-            displacement: 26
+            displacement: 26,
         };
         var params = Object.assign({}, defaults, input);
         var currentConversionData = new FixedSizeLinkedList(params.conversionPeriod * 2, true, true, false);
@@ -3877,13 +4167,18 @@ class IchimokuCloud extends Indicator {
                 }
                 else {
                     // Tenkan-sen (ConversionLine): (9-period high + 9-period low)/2))
-                    let conversionLine = (currentConversionData.periodHigh + currentConversionData.periodLow) / 2;
+                    let conversionLine = (currentConversionData.periodHigh +
+                        currentConversionData.periodLow) /
+                        2;
                     // Kijun-sen (Base Line): (26-period high + 26-period low)/2))
-                    let baseLine = (currentBaseData.periodHigh + currentBaseData.periodLow) / 2;
+                    let baseLine = (currentBaseData.periodHigh +
+                        currentBaseData.periodLow) /
+                        2;
                     // Senkou Span A (Leading Span A): (Conversion Line + Base Line)/2))
                     let spanA = (conversionLine + baseLine) / 2;
                     // Senkou Span B (Leading Span B): (52-period high + 52-period low)/2))
-                    let spanB = (currenSpanData.periodHigh + currenSpanData.periodLow) / 2;
+                    let spanB = (currenSpanData.periodHigh + currenSpanData.periodLow) /
+                        2;
                     // Senkou Span A / Senkou Span B offset by 26 periods
                     // if(spanCounter < params.displacement) {
                     // 	spanCounter++
@@ -3895,7 +4190,7 @@ class IchimokuCloud extends Indicator {
                         conversion: conversionLine,
                         base: baseLine,
                         spanA: spanA,
-                        spanB: spanB
+                        spanB: spanB,
                     };
                 }
                 tick = yield result;
@@ -4147,7 +4442,7 @@ class CrossDown extends Indicator {
         this.lineB = input.lineB;
         var currentLineA = [];
         var currentLineB = [];
-        const genFn = (function* () {
+        const genFn = function* () {
             var current = yield;
             var result = false;
             while (true) {
@@ -4155,7 +4450,8 @@ class CrossDown extends Indicator {
                 currentLineB.unshift(current.valueB);
                 result = current.valueA < current.valueB;
                 var pointer = 1;
-                while (result === true && currentLineA[pointer] <= currentLineB[pointer]) {
+                while (result === true &&
+                    currentLineA[pointer] <= currentLineB[pointer]) {
                     if (currentLineA[pointer] < currentLineB[pointer]) {
                         result = false;
                     }
@@ -4172,14 +4468,14 @@ class CrossDown extends Indicator {
                 }
                 current = yield result;
             }
-        });
+        };
         this.generator = genFn();
         this.generator.next();
         this.result = [];
         this.lineA.forEach((value, index) => {
             var result = this.generator.next({
                 valueA: this.lineA[index],
-                valueB: this.lineB[index]
+                valueB: this.lineB[index],
             });
             if (result.value !== undefined) {
                 this.result.push(result.value);
@@ -4195,10 +4491,9 @@ class CrossDown extends Indicator {
     nextValue(valueA, valueB) {
         return this.generator.next({
             valueA: valueA,
-            valueB: valueB
+            valueB: valueB,
         }).value;
     }
-    ;
 }
 CrossDown.calculate = crossDown;
 function crossDown(input) {
@@ -4288,13 +4583,13 @@ function getAvailableIndicators () {
   AvailableIndicators.push('tweezertop');
   AvailableIndicators.push('tweezerbottom');
 
-  // AvailableIndicators.push('predictPattern');
-  // AvailableIndicators.push('hasDoubleBottom');
-  // AvailableIndicators.push('hasDoubleTop');
-  // AvailableIndicators.push('hasHeadAndShoulder');
-  // AvailableIndicators.push('hasInverseHeadAndShoulder');
-  // AvailableIndicators.push('isTrendingUp');
-  // AvailableIndicators.push('isTrendingDown');
+  AvailableIndicators.push('predictPattern');
+  AvailableIndicators.push('hasDoubleBottom');
+  AvailableIndicators.push('hasDoubleTop');
+  AvailableIndicators.push('hasHeadAndShoulder');
+  AvailableIndicators.push('hasInverseHeadAndShoulder');
+  AvailableIndicators.push('isTrendingUp');
+  AvailableIndicators.push('isTrendingDown');
   AvailableIndicators.push('ichimokucloud');
   
   AvailableIndicators.push('keltnerchannels');
@@ -4320,6 +4615,8 @@ exports.wma = wma;
 exports.WMA = WMA;
 exports.wema = wema;
 exports.WEMA = WEMA;
+exports.wildersmoothing = wildersmoothing;
+exports.WilderSmoothing = WilderSmoothing;
 exports.macd = macd;
 exports.MACD = MACD;
 exports.rsi = rsi;
@@ -4415,6 +4712,14 @@ exports.shootingstarunconfirmed = shootingstarunconfirmed;
 exports.tweezertop = tweezertop;
 exports.tweezerbottom = tweezerbottom;
 exports.fibonacciretracement = fibonacciretracement;
+exports.predictPattern = predictPattern;
+exports.PatternDetector = PatternDetector;
+exports.hasDoubleBottom = hasDoubleBottom;
+exports.hasDoubleTop = hasDoubleTop;
+exports.hasHeadAndShoulder = hasHeadAndShoulder;
+exports.hasInverseHeadAndShoulder = hasInverseHeadAndShoulder;
+exports.isTrendingUp = isTrendingUp;
+exports.isTrendingDown = isTrendingDown;
 exports.ichimokucloud = ichimokucloud;
 exports.IchimokuCloud = IchimokuCloud;
 exports.keltnerchannels = keltnerchannels;

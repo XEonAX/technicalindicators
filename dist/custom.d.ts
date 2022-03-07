@@ -87,10 +87,10 @@ declare class VWAPInput extends IndicatorInput {
 }
 declare class VWAP extends Indicator {
     result: number[];
-    generator: IterableIterator<number | undefined>;
+    generator: IterableIterator<number>;
     constructor(input: VWAPInput);
     static calculate: typeof vwap;
-    nextValue(price: CandleData): number | undefined;
+    nextValue(price: CandleData): number;
 }
 declare function vwap(input: VWAPInput): number[];
 declare class VolumeProfileInput extends IndicatorInput {
