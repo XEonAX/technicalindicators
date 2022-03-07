@@ -1,7 +1,7 @@
 import { Indicator, IndicatorInput } from '../indicator/indicator';
 import { getConfig } from '../config';
 // @ts-ignore
-import * as tf from '@tensorflow/tfjs';
+// import * as tf from '@tensorflow/tfjs';
 
 var isNodeEnvironment = false;
 
@@ -74,23 +74,23 @@ async function loadModel() {
     laodingModel = true;
     loadingPromise = new Promise(async function(resolve, reject) {
         if(isNodeEnvironment) {
-            tf = require('@tensorflow/tfjs')
+            // tf = require('@tensorflow/tfjs')
             console.log('Nodejs Environment detected ');
-            var tfnode = require('@tensorflow/tfjs-node');
-            var modelPath = require('path').resolve(__dirname, '../tf_model/model.json');
-            model = await tf.loadModel(tfnode.io.fileSystem(modelPath));
+            // var tfnode = require('@tensorflow/tfjs-node');
+            // var modelPath = require('path').resolve(__dirname, '../tf_model/model.json');
+            // model = await tf.loadModel(tfnode.io.fileSystem(modelPath));
         } else {
-            if(typeof (window as any).tf == "undefined") {
-                modelLoaded = false;
-                laodingModel = false;
-                console.log('Tensorflow js not imported, pattern detection may not work');
-                resolve(true);
-                return;
-            }
-            tf = (window as any).tf;
-            console.log('Browser Environment detected ', tf);
+            // if(typeof (window as any).tf == "undefined") {
+            //     modelLoaded = false;
+            //     laodingModel = false;
+            //     console.log('Tensorflow js not imported, pattern detection may not work');
+            //     resolve(true);
+            //     return;
+            // }
+            // tf = (window as any).tf;
+            // console.log('Browser Environment detected ', tf);
             console.log('Loading model ....')
-            model = await tf.loadModel('/tf_model/model.json');
+            // model = await tf.loadModel('/tf_model/model.json');
             modelLoaded = true;
             laodingModel = false;
             setTimeout(resolve, 1000);
@@ -115,10 +115,11 @@ export async function predictPattern(input:PatternDetectorInput):Promise<Pattern
     }
     Indicator.reverseInputs(input);
     var values = input.values;
-    var output = await model.predict(tf.tensor2d([l2Normalize(interpolateArray(values, 400))]));
-    var index = tf.argMax(output, 1).get(0);
+    // var output = await model.predict(tf.tensor2d([l2Normalize(interpolateArray(values, 400))]));
+    // var index = tf.argMax(output, 1).get(0);
     Indicator.reverseInputs(input);
-    return { patternId : index, pattern : oneHotMap[index], probability : output.get(0,4) * 100}
+    return null;
+    // return { patternId : index, pattern : oneHotMap[index], probability : output.get(0,4) * 100}
 }
 
 export async function hasDoubleBottom(input:PatternDetectorInput):Promise<Boolean> {
