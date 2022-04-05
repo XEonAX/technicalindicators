@@ -22,7 +22,7 @@ export default class BearishFractal extends CandlestickFinder {
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n-2]);
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n-1]);
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n+1]);
-        isBearishFractal = isBearishFractal && (daysHigh > data.high[n+2]);
+        // isBearishFractal = isBearishFractal && (daysHigh > data.high[n+2]);
 
         return isBearishFractal;
     }
