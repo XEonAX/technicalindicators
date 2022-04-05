@@ -3964,7 +3964,7 @@ class BullishFractal extends CandlestickFinder {
         isBearishFractal = isBearishFractal && (daysLow < data.low[n - 2]);
         isBearishFractal = isBearishFractal && (daysLow < data.low[n - 1]);
         isBearishFractal = isBearishFractal && (daysLow < data.low[n + 1]);
-        isBearishFractal = isBearishFractal && (daysLow < data.low[n + 2]);
+        // isBearishFractal = isBearishFractal && (daysLow < data.low[n+2]);
         return isBearishFractal;
     }
 }
@@ -3991,7 +3991,7 @@ class BearishFractal extends CandlestickFinder {
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n - 2]);
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n - 1]);
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n + 1]);
-        isBearishFractal = isBearishFractal && (daysHigh > data.high[n + 2]);
+        // isBearishFractal = isBearishFractal && (daysHigh > data.high[n+2]);
         return isBearishFractal;
     }
 }
