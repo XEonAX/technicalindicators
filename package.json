@@ -154,10 +154,6 @@
     "@tensorflow/tfjs": "0.10.0",
     "@types/node": "^6.0.96"
   },
-  "np": {
-    "yarn": false,
-    "contents": "dist"
-  },
   "publishConfig": {
     "access": "public"
   },
