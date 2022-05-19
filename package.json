@@ -8,8 +8,8 @@
   "jsnext:main": "lib/index.js",
   "scripts": {
     "cover": "babel-istanbul --include-all-sources cover -x dist/**/*.* ./node_modules/mocha/bin/_mocha -- -R spec && open coverage/lcov-report/index.html",
-    "test": "mocha --compilers js:babel-register --require babel-polyfill",
-    "test:watch": "mocha --watch --compilers js:babel-register --require babel-polyfill",
+    "test": "mocha --require js:babel-register --require babel-polyfill",
+    "test:watch": "mocha --watch --require js:babel-register --require babel-polyfill",
     "generateDts": "./generateTsDefinitions.sh",
     "build": "tsc -p . && babel-node --presets es2015 rollup.js",
     "start": "sh test.sh"
