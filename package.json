@@ -135,7 +135,7 @@
     "mocha": "^9.2.1",
     "monaco-editor": "^0.8.3",
     "rimraf": "^2.0.0",
-    "rollup": "^0.41.6",
+    "rollup": "^1.26.3",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-babel-minify": "^3.1.2",
     "rollup-plugin-commonjs": "^8.3.0",
@@ -155,10 +155,14 @@
     "@types/node": "^6.0.96"
   },
   "np": {
-		"yarn": false,
-		"contents": "dist"
-	},
+    "yarn": false,
+    "contents": "dist"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "npm": ">=6.14.0 && <7.0.0",
+    "node": ">=14.19.0 && <16.0.0"
   }
 }
