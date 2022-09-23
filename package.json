@@ -1,6 +1,6 @@
 {
   "name": "@rylorin/technicalindicators",
-  "version": "3.1.5",
+  "version": "3.1.4",
   "description": "Techincal Indicators written in javascript",
   "main": "dist/index.js",
   "module": "lib/index.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nenjotsu/technicalindicators.git"
+    "url": "git+https://github.com/rylorin/technicalindicators.git"
   },
   "keywords": [
     "Technical indicators",
@@ -102,7 +102,7 @@
     "Cross Down",
     "Cross Over"
   ],
-  "author": "nenjotsu@protonmail.com",
+  "author": "rylorin@protonmail.com",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/rylorin/technicalindicators/issues"
