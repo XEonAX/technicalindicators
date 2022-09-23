@@ -31,11 +31,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Install packages
-      - name: "Install"
-        run: npm install
+      # - name: "Installing"
+      #   run: npm install
+      - run: npm ci
 
       # Publish the package
-      - name: "Publish to Npm registry"
+      - name: "Publishing to Npm registry"
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
