@@ -1,5 +1,5 @@
 {
-  "name": "rylorin/technicalindicators",
+  "name": "@rylorin/technicalindicators",
   "version": "3.1.4",
   "description": "Techincal Indicators written in javascript",
   "main": "dist/index.js",
