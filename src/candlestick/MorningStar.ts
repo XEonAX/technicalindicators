@@ -25,8 +25,8 @@ export default class MorningStar extends CandlestickFinder {
          
         let firstdaysMidpoint = ((firstdaysOpen+firstdaysClose)/2);
         let isFirstBearish    = firstdaysClose < firstdaysOpen;
-        // let isSmallBodyExists = ((firstdaysLow > seconddaysLow)&&
-        //                         (firstdaysLow > seconddaysHigh));
+        let isSmallBodyExists = firstdaysOpen > seconddaysHigh;
+        let firstBiggerSecond = Math.abs(firstdaysOpen - firstdaysClose) >= Math.abs(seconddaysOpen - seconddaysClose) * 3
         let isThirdBullish    = thirddaysOpen < thirddaysClose; 
 
         // let gapExists         = ((seconddaysHigh < firstdaysLow) && 
@@ -34,7 +34,7 @@ export default class MorningStar extends CandlestickFinder {
         //                         (thirddaysOpen > seconddaysHigh) && 
         //                         (seconddaysClose < thirddaysOpen));
       let doesCloseAboveFirstMidpoint = thirddaysClose > firstdaysMidpoint;
-      return (isFirstBearish && this.includesDoji(data) && isThirdBullish && doesCloseAboveFirstMidpoint );
+      return (isFirstBearish && this.includesDoji(data) && firstBiggerSecond && isSmallBodyExists && isThirdBullish && doesCloseAboveFirstMidpoint );
      }
 
     includesDoji(data:StockData) {
