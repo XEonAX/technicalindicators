@@ -21,7 +21,7 @@ export default class HammerPattern extends CandlestickFinder {
     }
 
     downwardTrend (data:StockData, confirm = true) {
-        let end = confirm ? data.open.length - 2 : data.open.length - 1;
+        let end = confirm ? data.close.length - 2 : data.close.length - 1;
         // Analyze trends in closing prices of the first three or four candlesticks
         let gains = averagegain({ values: data.close.slice(0, end), period: end - 1 });
         let losses = averageloss({ values: data.close.slice(0, end), period: end - 1 });
@@ -30,8 +30,8 @@ export default class HammerPattern extends CandlestickFinder {
     }
 
     includesHammer (data:StockData, confirm = true) {
-        let start = confirm ? data.open.length - 2 : data.open.length - 1;
-        let end = confirm ? data.open.length - 1 : undefined;
+        let start = confirm ? data.close.length - 2 : data.close.length - 1;
+        let end = confirm ? data.close.length - 1 : undefined;
         let possibleHammerData = {
             open: data.open.slice(start, end),
             close: data.close.slice(start, end),
@@ -49,16 +49,16 @@ export default class HammerPattern extends CandlestickFinder {
 
     hasConfirmation (data:StockData) {
         let possibleHammer = {
-            open: data.open[data.open.length - 2],
-            close: data.close[data.open.length - 2],
-            low: data.low[data.open.length - 2],
-            high: data.high[data.open.length - 2],
+            open: data.open[data.close.length - 2],
+            close: data.close[data.close.length - 2],
+            low: data.low[data.close.length - 2],
+            high: data.high[data.close.length - 2],
         }
         let possibleConfirmation = {
-            open: data.open[data.open.length - 1],
-            close: data.close[data.open.length - 1],
-            low: data.low[data.open.length - 1],
-            high: data.high[data.open.length - 1],
+            open: data.open[data.close.length - 1],
+            close: data.close[data.close.length - 1],
+            low: data.low[data.close.length - 1],
+            high: data.high[data.close.length - 1],
         }
         // Confirmation candlestick is bullish
         let isPattern = possibleConfirmation.open < possibleConfirmation.close;

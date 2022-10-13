@@ -10,13 +10,13 @@ export default class TweezerBottom extends CandlestickFinder {
     }
 
     logic (data:StockData) {
-        return this.downwardTrend(data) && this.approximateEqual(data.low[data.open.length - 2], data.low[data.open.length - 1]);
+        return this.downwardTrend(data) && this.approximateEqual(data.low[data.close.length - 2], data.low[data.close.length - 1]);
     }
 
     downwardTrend (data:StockData) {
         // Analyze trends in closing prices of the first three or four candlesticks
-        let gains = averagegain({ values: data.close.slice(0, data.open.length - 2), period: data.open.length - 3 });
-        let losses = averageloss({ values: data.close.slice(0, data.open.length - 2), period: data.open.length - 3 });
+        let gains = averagegain({ values: data.close.slice(0, data.close.length - 2), period: data.close.length - 3 });
+        let losses = averageloss({ values: data.close.slice(0, data.close.length - 2), period: data.close.length - 3 });
         // Downward trend, so more losses than gains
         return losses > gains;
     }
