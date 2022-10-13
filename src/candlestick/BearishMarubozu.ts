@@ -14,7 +14,7 @@ export default class BearishMarubozu extends CandlestickFinder {
         let daysLow   = data.low[0];
 
         let isBearishMarbozu =  this.approximateEqual(daysOpen, daysHigh) && 
-                                this.approximateEqual(daysLow, daysClose) &&
+                                daysLow == daysClose &&
                                 daysOpen > daysClose && 
                                 daysOpen > daysLow;
 
