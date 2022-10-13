@@ -14,7 +14,7 @@ export default class BearishSpinningTop extends CandlestickFinder {
         let daysLow   = data.low[0];
 
         let bodyLength           = Math.abs(daysClose-daysOpen);
-        let isBearish            = open > close;
+        let isBearish            = daysOpen > daysClose;
         let upperShadowLength    = Math.abs(daysHigh-daysOpen);
         let lowerShadowLength    = Math.abs(daysHigh-daysLow);
         let isBearishSpinningTop = bodyLength < upperShadowLength && 
