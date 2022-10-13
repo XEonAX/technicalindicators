@@ -14,10 +14,11 @@ export default class BullishSpinningTop extends CandlestickFinder {
         let daysLow   = data.low[0];
 
         let bodyLength           = Math.abs(daysClose-daysOpen);
+        let isBullish            = close > open;
         let upperShadowLength    = Math.abs(daysHigh-daysClose);
         let lowerShadowLength    = Math.abs(daysOpen-daysLow);
         let isBullishSpinningTop = bodyLength < upperShadowLength && 
-                                 bodyLength < lowerShadowLength;
+                                 bodyLength < lowerShadowLength && isBullish;
 
         return isBullishSpinningTop;
     }
