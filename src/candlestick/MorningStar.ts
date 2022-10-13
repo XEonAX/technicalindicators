@@ -1,6 +1,8 @@
 import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
-
+import { bearishspinningtop } from './BearishSpinningTop';
+import { bullishspinningtop } from './BullishSpinningTop';
+import { doji } from './Doji';
 export default class MorningStar extends CandlestickFinder {
     constructor() {
         super();
@@ -23,17 +25,30 @@ export default class MorningStar extends CandlestickFinder {
          
         let firstdaysMidpoint = ((firstdaysOpen+firstdaysClose)/2);
         let isFirstBearish    = firstdaysClose < firstdaysOpen;
-        let isSmallBodyExists = ((firstdaysLow > seconddaysLow)&&
-                                (firstdaysLow > seconddaysHigh));
+        // let isSmallBodyExists = ((firstdaysLow > seconddaysLow)&&
+        //                         (firstdaysLow > seconddaysHigh));
         let isThirdBullish    = thirddaysOpen < thirddaysClose; 
 
-        let gapExists         = ((seconddaysHigh < firstdaysLow) && 
-                                (seconddaysLow < firstdaysLow) && 
-                                (thirddaysOpen > seconddaysHigh) && 
-                                (seconddaysClose < thirddaysOpen));
+        // let gapExists         = ((seconddaysHigh < firstdaysLow) && 
+        //                         (seconddaysLow < firstdaysLow) && 
+        //                         (thirddaysOpen > seconddaysHigh) && 
+        //                         (seconddaysClose < thirddaysOpen));
       let doesCloseAboveFirstMidpoint = thirddaysClose > firstdaysMidpoint;
-      return (isFirstBearish && isSmallBodyExists && gapExists && isThirdBullish && doesCloseAboveFirstMidpoint );
+      return (isFirstBearish && this.includesDoji(data) && isThirdBullish && doesCloseAboveFirstMidpoint );
      }
+
+    includesDoji(data:StockData) {
+      let possibleDojiData = {
+        open: [data.open[1]],
+        close: [data.close[1]],
+        low: [data.low[1]],
+        high: [data.high[1]],
+      };
+      let isPattern = bearishspinningtop(possibleDojiData);
+      isPattern = isPattern || bullishspinningtop(possibleDojiData);
+      isPattern = isPattern || doji(possibleDojiData);
+      return isPattern;
+    }
 }
 
 export function morningstar(data:StockData) {
