@@ -2880,9 +2880,10 @@ class BullishEngulfingPattern extends CandlestickFinder {
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
         let seconddaysLow = data.low[1];
-        let isBullishEngulfing = ((firstdaysClose < firstdaysOpen) &&
+        let isBullishEngulfing = (firstdaysClose < firstdaysOpen) &&
             (firstdaysOpen > seconddaysOpen) &&
-            (firstdaysOpen < seconddaysClose));
+            (firstdaysOpen < seconddaysClose) &&
+            (firstdaysHigh < seconddaysHigh);
         return (isBullishEngulfing);
     }
 }
@@ -3327,9 +3328,10 @@ class BearishEngulfingPattern extends CandlestickFinder {
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
         let seconddaysLow = data.low[1];
-        let isBearishEngulfing = ((firstdaysClose > firstdaysOpen) &&
+        let isBearishEngulfing = (firstdaysClose > firstdaysOpen) &&
             (firstdaysOpen < seconddaysOpen) &&
-            (firstdaysOpen > seconddaysClose));
+            (firstdaysOpen > seconddaysClose) &&
+            (firstdaysLow > seconddaysLow);
         return (isBearishEngulfing);
     }
 }
