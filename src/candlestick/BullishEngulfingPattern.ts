@@ -19,7 +19,6 @@ export default class BullishEngulfingPattern extends CandlestickFinder {
         
         let isBullishEngulfing     = ((firstdaysClose < firstdaysOpen) && 
                                         (firstdaysOpen > seconddaysOpen) &&
-                                        (firstdaysClose > seconddaysOpen) &&
                                         (firstdaysOpen < seconddaysClose));
                     
         return (isBullishEngulfing );
