@@ -10,7 +10,7 @@ export default class TweezerTop extends CandlestickFinder {
     }
 
     logic (data:StockData) {
-        return this.upwardTrend(data) && data.high[data.open.length - 2] == data.high[data.open.length - 1];
+        return this.upwardTrend(data) && this.approximateEqual(data.high[data.open.length - 2], data.high[data.open.length - 1]);
     }
 
     upwardTrend (data:StockData) {
