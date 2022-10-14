@@ -20,7 +20,8 @@ export default class BearishEngulfingPattern extends CandlestickFinder {
         let isBearishEngulfing     = (firstdaysClose > firstdaysOpen) && 
                                         (firstdaysOpen < seconddaysOpen) &&
                                         (firstdaysOpen > seconddaysClose) &&
-                                        (firstdaysLow > seconddaysLow);
+                                        (firstdaysLow > seconddaysLow) && 
+                                        (firstdaysHigh < seconddaysHigh);
                     
         return (isBearishEngulfing);
    }
