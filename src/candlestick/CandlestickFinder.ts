@@ -53,7 +53,7 @@ export default class CandlestickFinder {
 
     protected _getLastDataForCandleStick(data:StockData) {
         let requiredCount = this.requiredCount;
-        if (data.close.length === requiredCount) {
+        if (data.close.length === requiredCount || !requiredCount) {
             return data;
         } else {
             let returnVal = {
