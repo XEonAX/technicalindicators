@@ -2703,7 +2703,7 @@ class CandlestickFinder {
     }
     _getLastDataForCandleStick(data) {
         let requiredCount = this.requiredCount;
-        if (data.close.length === requiredCount) {
+        if (data.close.length === requiredCount || !requiredCount) {
             return data;
         }
         else {
