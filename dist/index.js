@@ -3268,7 +3268,20 @@ class TweezerBottom extends CandlestickFinder {
         this.name = 'TweezerBottom';
     }
     logic(data) {
-        return this.downwardTrend(data) && this.approximateEqual(data.low[data.close.length - 2], data.low[data.close.length - 1]);
+        let firstdaysOpen = data.open[data.close.length - 2];
+        let firstdaysClose = data.close[data.close.length - 2];
+        let firstdaysHigh = data.high[data.close.length - 2];
+        let firstdaysLow = data.low[data.close.length - 2];
+        let isFirstdaysBearish = firstdaysOpen > firstdaysClose;
+        let seconddaysOpen = data.open[data.close.length - 1];
+        let seconddaysClose = data.close[data.close.length - 1];
+        let seconddaysHigh = data.high[data.close.length - 1];
+        let seconddaysLow = data.low[data.close.length - 1];
+        let isSeconddaysBullish = seconddaysOpen < seconddaysClose;
+        return this.downwardTrend(data) && this.approximateEqual(firstdaysLow, seconddaysLow)
+            && firstdaysOpen > seconddaysClose
+            && firstdaysClose > seconddaysLow
+            && isFirstdaysBearish && isSeconddaysBullish;
     }
     downwardTrend(data) {
         // Analyze trends in closing prices of the first three or four candlesticks
@@ -3685,7 +3698,20 @@ class TweezerTop extends CandlestickFinder {
         this.name = 'TweezerTop';
     }
     logic(data) {
-        return this.upwardTrend(data) && this.approximateEqual(data.high[data.close.length - 2], data.high[data.close.length - 1]);
+        let firstdaysOpen = data.open[data.close.length - 2];
+        let firstdaysClose = data.close[data.close.length - 2];
+        let firstdaysHigh = data.high[data.close.length - 2];
+        let firstdaysLow = data.low[data.close.length - 2];
+        let isFirstdaysBullish = firstdaysOpen < firstdaysClose;
+        let seconddaysOpen = data.open[data.close.length - 1];
+        let seconddaysClose = data.close[data.close.length - 1];
+        let seconddaysHigh = data.high[data.close.length - 1];
+        let seconddaysLow = data.low[data.close.length - 1];
+        let isSeconddaysBearish = seconddaysOpen > seconddaysClose;
+        return this.upwardTrend(data) && this.approximateEqual(firstdaysHigh, seconddaysHigh)
+            && firstdaysOpen < seconddaysClose
+            && firstdaysClose < seconddaysHigh
+            && isFirstdaysBullish && isSeconddaysBearish;
     }
     upwardTrend(data) {
         // Analyze trends in closing prices of the first three or four candlesticks
