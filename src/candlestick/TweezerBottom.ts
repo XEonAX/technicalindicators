@@ -10,7 +10,21 @@ export default class TweezerBottom extends CandlestickFinder {
     }
 
     logic (data:StockData) {
-        return this.downwardTrend(data) && this.approximateEqual(data.low[data.close.length - 2], data.low[data.close.length - 1]);
+        let firstdaysOpen   = data.open[data.close.length - 2];
+        let firstdaysClose  = data.close[data.close.length - 2];
+        let firstdaysHigh   = data.high[data.close.length - 2];
+        let firstdaysLow    = data.low[data.close.length - 2]
+        let isFirstdaysBearish = firstdaysOpen > firstdaysClose
+        let seconddaysOpen  = data.open[data.close.length - 1];
+        let seconddaysClose = data.close[data.close.length - 1];
+        let seconddaysHigh  = data.high[data.close.length - 1];
+        let seconddaysLow   = data.low[data.close.length - 1]
+        let isSeconddaysBullish = seconddaysOpen < seconddaysClose
+
+        return this.downwardTrend(data) && this.approximateEqual(firstdaysLow, seconddaysLow) 
+                                      && firstdaysOpen > seconddaysClose 
+                                      && firstdaysClose > seconddaysLow
+                                      && isFirstdaysBearish && isSeconddaysBullish;
     }
 
     downwardTrend (data:StockData) {
