@@ -132,7 +132,6 @@
     "koa": "^2.2.0",
     "koa-static": "^3.0.0",
     "lit-html": "^0.9.0",
-    "mocha": "^9.2.1",
     "monaco-editor": "^0.8.3",
     "rimraf": "^2.0.0",
     "rollup": "^1.26.3",
