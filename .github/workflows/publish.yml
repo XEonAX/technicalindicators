@@ -30,10 +30,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Install packages
-      # - name: "Installing"
-      #   run: npm install
-      - run: yarn ci
+      # Install packages with yarn
+      - name: "Install"
+        run: yarn install --frozen-lockfile
+
+      - name: "Test"
+        run: yarn test
 
       # Publish the package
       - name: "Publishing to Npm registry"
