@@ -27,7 +27,7 @@ export class ChandelierExit extends Indicator {
       var dataCollector = new LinkedList(input.period * 2, true, true, false);
       this.generator = (function* (){
         var result;
-        var tick = yield;
+        var tick = yield { high, low } ;
         var atr;
         while (true)
         {

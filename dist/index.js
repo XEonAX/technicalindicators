@@ -214,9 +214,7 @@ class FixedSizeLinkedList extends LinkedList {
             if (this.periodHigh <= this.current) {
                 this.periodHigh = this.current;
             }
-            
         }
-        
     }
     calculatePeriodLow() {
         this.resetCursor();
@@ -226,9 +224,7 @@ class FixedSizeLinkedList extends LinkedList {
             if (this.periodLow >= this.current) {
                 this.periodLow = this.current;
             }
-            
         }
-        
     }
 }
 
@@ -263,7 +259,6 @@ function format(v) {
 
 class IndicatorInput {
 }
-
 class Indicator {
     constructor(input) {
         this.format = input.format || format;
@@ -285,8 +280,6 @@ class Indicator {
 }
 
 //STEP 1. Import Necessary indicator or rather last step
-//STEP 2. Create the input for the indicator, mandatory should be in the constructor
-
 //STEP3. Add class based syntax with export
 class SMA extends Indicator {
     constructor(input) {
@@ -341,7 +334,6 @@ function sma(input) {
     Indicator.reverseInputs(input);
     return result;
 }
-
 //STEP 6. Run the tests
 
 class EMA extends Indicator {
@@ -350,9 +342,9 @@ class EMA extends Indicator {
         var period = input.period;
         var priceArray = input.values;
         var exponent = 2 / (period + 1);
-        var sma$$1;
+        var sma;
         this.result = [];
-        sma$$1 = new SMA({ period: period, values: [] });
+        sma = new SMA({ period: period, values: [] });
         var genFn = function* () {
             var tick = yield;
             var prevEma;
@@ -363,7 +355,7 @@ class EMA extends Indicator {
                 }
                 else {
                     tick = yield;
-                    prevEma = sma$$1.nextValue(tick);
+                    prevEma = sma.nextValue(tick);
                     if (prevEma)
                         tick = yield prevEma;
                 }
@@ -438,7 +430,6 @@ class WMA extends Indicator {
     ;
 }
 WMA.calculate = wma;
-
 function wma(input) {
     Indicator.reverseInputs(input);
     var result = new WMA(input).result;
@@ -455,9 +446,9 @@ class WEMA extends Indicator {
         var period = input.period;
         var priceArray = input.values;
         var exponent = 1 / period;
-        var sma$$1;
+        var sma;
         this.result = [];
-        sma$$1 = new SMA({ period: period, values: [] });
+        sma = new SMA({ period: period, values: [] });
         var genFn = function* () {
             var tick = yield;
             var prevEma;
@@ -468,7 +459,7 @@ class WEMA extends Indicator {
                 }
                 else {
                     tick = yield;
-                    prevEma = sma$$1.nextValue(tick);
+                    prevEma = sma.nextValue(tick);
                     if (prevEma !== undefined)
                         tick = yield prevEma;
                 }
@@ -508,7 +499,6 @@ class WilderSmoothing extends Indicator {
         this.period = input.period;
         this.price = input.values;
         var genFn = function* (period) {
-            var list = new LinkedList();
             var sum = 0;
             var counter = 1;
             var current = yield;
@@ -561,8 +551,6 @@ function wildersmoothing(input) {
 /**
  * Created by AAravindan on 5/4/16.
  */
-
-
 class MACD extends Indicator {
     constructor(input) {
         super(input);
@@ -763,7 +751,6 @@ function averageloss(input) {
 /**
  * Created by AAravindan on 5/5/16.
  */
-
 class RSI extends Indicator {
     constructor(input) {
         super(input);
@@ -771,7 +758,6 @@ class RSI extends Indicator {
         var values = input.values;
         var GainProvider = new AverageGain({ period: period, values: [] });
         var LossProvider = new AverageLoss({ period: period, values: [] });
-        let count = 1;
         this.generator = (function* (period) {
             var current = yield;
             var lastAvgGain, lastAvgLoss, RS, currentRSI;
@@ -791,10 +777,9 @@ class RSI extends Indicator {
                         currentRSI = parseFloat((100 - 100 / (1 + RS)).toFixed(2));
                     }
                 }
-                count++;
                 current = yield currentRSI;
             }
-        })(period);
+        })();
         this.generator.next();
         this.result = [];
         values.forEach((tick) => {
@@ -824,18 +809,17 @@ class SD extends Indicator {
         super(input);
         var period = input.period;
         var priceArray = input.values;
-        var sma$$1 = new SMA({ period: period, values: [], format: (v) => { return v; } });
+        var sma = new SMA({ period: period, values: [], format: (v) => { return v; } });
         this.result = [];
         this.generator = (function* () {
             var tick;
             var mean;
             var currentSet = new FixedSizeLinkedList(period);
-            
             tick = yield;
             var sd;
             while (true) {
                 currentSet.push(tick);
-                mean = sma$$1.nextValue(tick);
+                mean = sma.nextValue(tick);
                 if (mean) {
                     let sum = 0;
                     for (let x of currentSet.iterator()) {
@@ -879,10 +863,10 @@ class BollingerBands extends Indicator {
         var priceArray = input.values;
         var stdDev = input.stdDev;
         var format = this.format;
-        var sma$$1, sd$$1;
+        var sma, sd;
         this.result = [];
-        sma$$1 = new SMA({ period: period, values: [], format: (v) => { return v; } });
-        sd$$1 = new SD({ period: period, values: [], format: (v) => { return v; } });
+        sma = new SMA({ period: period, values: [], format: (v) => { return v; } });
+        sd = new SD({ period: period, values: [], format: (v) => { return v; } });
         this.generator = (function* () {
             var result;
             var tick;
@@ -890,8 +874,8 @@ class BollingerBands extends Indicator {
             var calcsd;
             tick = yield;
             while (true) {
-                calcSMA = sma$$1.nextValue(tick);
-                calcsd = sd$$1.nextValue(tick);
+                calcSMA = sma.nextValue(tick);
+                calcsd = sd.nextValue(tick);
                 if (calcSMA) {
                     let middle = format(calcSMA);
                     let upper = format(calcSMA + (calcsd * stdDev));
@@ -978,10 +962,6 @@ class MDM extends Indicator {
         return this.generator.next(price).value;
     }
 }
-
-/**
- * Created by AAravindan on 5/8/16.
- */
 
 class PDM extends Indicator {
     constructor(input) {
@@ -1089,8 +1069,6 @@ function truerange(input) {
     return result;
 }
 
-class ADXOutput extends IndicatorInput {
-}
 class ADX extends Indicator {
     constructor(input) {
         super(input);
@@ -1144,14 +1122,9 @@ class ADX extends Indicator {
             throw "Inputs(low,high, close) not of equal size";
         }
         this.result = [];
-        ADXOutput;
         this.generator = (function* () {
             var tick = yield;
-            var index = 0;
-            var lastATR, lastAPDM, lastAMDM, lastPDI, lastMDI, lastDX, smoothedDX;
-            lastATR = 0;
-            lastAPDM = 0;
-            lastAMDM = 0;
+            var lastPDI, lastMDI, lastDX, smoothedDX;
             while (true) {
                 let calcTr = tr.nextValue(tick);
                 let calcPDM = plusDM.nextValue(tick);
@@ -1231,7 +1204,7 @@ class ATR extends Indicator {
             high: [],
             close: [],
         });
-        var wema$$1 = new WEMA({
+        var wema = new WEMA({
             period: period,
             values: [],
             format: (v) => {
@@ -1252,7 +1225,7 @@ class ATR extends Indicator {
                     avgTrueRange = undefined;
                 }
                 else {
-                    avgTrueRange = wema$$1.nextValue(trange);
+                    avgTrueRange = wema.nextValue(trange);
                 }
                 tick = yield avgTrueRange;
             }
@@ -1458,38 +1431,6 @@ function kst(input) {
     Indicator.reverseInputs(input);
     return result;
 }
-
-/*
-  There seems to be a few interpretations of the rules for this regarding which prices.
-  I mean the english from which periods are included. The wording does seem to
-  introduce some discrepancy so maybe that is why. I want to put the author's
-  own description here to reassess this later.
-  ----------------------------------------------------------------------------------------
-  For the first day of entry the SAR is the previous Significant Point
-
-  If long the SP is the lowest price reached while in the previous short trade
-  If short the SP is the highest price reached while in the previous long trade
-
-  If long:
-  Find the difference between the highest price made while in the trade and the SAR for today.
-  Multiple the difference by the AF and ADD the result to today's SAR to obtain the SAR for tomorrow.
-  Use 0.02 for the first AF and increase it by 0.02 on every day that a new high for the trade is made.
-  If a new high is not made continue to use the AF as last increased. Do not increase the AF above .20
-
-  Never move the SAR for tomorrow ABOVE the previous day's LOW or today's LOW.
-  If the SAR is calculated to be ABOVE the previous day's LOW or today's LOW then use the lower low between today and the previous day as the new SAR.
-  Make the next day's calculations based on this SAR.
-
-  If short:
-  Find the difference between the lowest price made while in the trade and the SAR for today.
-  Multiple the difference by the AF and SUBTRACT the result to today's SAR to obtain the SAR for tomorrow.
-  Use 0.02 for the first AF and increase it by 0.02 on every day that a new high for the trade is made.
-  If a new high is not made continue to use the AF as last increased. Do not increase the AF above .20
-
-  Never move the SAR for tomorrow BELOW the previous day's HIGH or today's HIGH.
-  If the SAR is calculated to be BELOW the previous day's HIGH or today's HIGH then use the higher high between today and the previous day as the new SAR. Make the next day's calculations based on this SAR.
-  ----------------------------------------------------------------------------------------
-*/
 
 class PSAR extends Indicator {
     constructor(input) {
@@ -1716,7 +1657,6 @@ function williamsr(input) {
 /**
  * Created by AAravindan on 5/17/16.
  */
-
 class ADL extends Indicator {
     constructor(input) {
         super(input);
@@ -1831,14 +1771,13 @@ function obv(input) {
 /**
  * Created by AAravindan on 5/9/16.
  */
-
 class TRIX extends Indicator {
     constructor(input) {
         super(input);
         let priceArray = input.values;
         let period = input.period;
         let format = this.format;
-        let ema$$1 = new EMA({
+        let ema = new EMA({
             period: period,
             values: [],
             format: (v) => {
@@ -1870,7 +1809,7 @@ class TRIX extends Indicator {
         this.generator = (function* () {
             let tick = yield;
             while (true) {
-                let initialema = ema$$1.nextValue(tick);
+                let initialema = ema.nextValue(tick);
                 let smoothedResult = initialema
                     ? emaOfema.nextValue(initialema)
                     : undefined;
@@ -2212,7 +2151,6 @@ function volumeprofile(input) {
 /**
  * Created by AAravindan on 5/4/16.
  */
-
 class TypicalPrice extends Indicator {
     constructor(input) {
         super(input);
@@ -2255,7 +2193,6 @@ function typicalprice(input) {
 /**
  * Created by AAravindan on 5/17/16.
  */
-
 class MFI extends Indicator {
     constructor(input) {
         super(input);
@@ -2350,9 +2287,8 @@ class StochasticRSI extends Indicator {
         let format = this.format;
         this.result = [];
         this.generator = (function* () {
-            let index = 1;
-            let rsi$$1 = new RSI({ period: rsiPeriod, values: [] });
-            let stochastic$$1 = new Stochastic({
+            let rsi = new RSI({ period: rsiPeriod, values: [] });
+            let stochastic = new Stochastic({
                 period: stochasticPeriod,
                 high: [],
                 low: [],
@@ -2369,14 +2305,14 @@ class StochasticRSI extends Indicator {
             let lastRSI, stochasticRSI, d, result;
             var tick = yield;
             while (true) {
-                lastRSI = rsi$$1.nextValue(tick);
+                lastRSI = rsi.nextValue(tick);
                 if (lastRSI !== undefined) {
                     var stochasticInput = {
                         high: lastRSI,
                         low: lastRSI,
                         close: lastRSI,
                     };
-                    stochasticRSI = stochastic$$1.nextValue(stochasticInput);
+                    stochasticRSI = stochastic.nextValue(stochasticInput);
                     if (stochasticRSI !== undefined &&
                         stochasticRSI.d !== undefined) {
                         d = dSma.nextValue(stochasticRSI.d);
@@ -2424,7 +2360,6 @@ class Highest extends Indicator {
         this.result = [];
         var periodList = new FixedSizeLinkedList(period, true, false, false);
         this.generator = (function* () {
-            var result;
             var tick;
             var high;
             tick = yield;
@@ -2472,7 +2407,6 @@ class Lowest extends Indicator {
         this.result = [];
         var periodList = new FixedSizeLinkedList(period, false, true, false);
         this.generator = (function* () {
-            var result;
             var tick;
             var high;
             tick = yield;
@@ -2520,7 +2454,6 @@ class Sum extends Indicator {
         this.result = [];
         var periodList = new FixedSizeLinkedList(period, false, false, true);
         this.generator = (function* () {
-            var result;
             var tick;
             var high;
             tick = yield;
@@ -2559,10 +2492,6 @@ function sum(input) {
     Indicator.reverseInputs(input);
     return result;
 }
-
-/**
- * Created by AAravindan on 5/4/16.
- */
 
 class Renko extends Indicator {
     constructor(input) {
@@ -2676,10 +2605,6 @@ function renko(input) {
     Indicator.reverseInputs(input);
     return result;
 }
-
-/**
- * Created by AAravindan on 5/4/16.
- */
 
 class HeikinAshi extends Indicator {
     constructor(input) {
@@ -4128,7 +4053,6 @@ class KeltnerChannelsInput extends IndicatorInput {
 }
 class KeltnerChannelsOutput extends IndicatorInput {
 }
-
 class KeltnerChannels extends Indicator {
     constructor(input) {
         super(input);
@@ -4138,18 +4062,17 @@ class KeltnerChannels extends Indicator {
         var tick;
         this.result = [];
         this.generator = (function* () {
-            var KeltnerChannelsOutput;
             var result;
             tick = yield;
             while (true) {
                 var { close } = tick;
                 var ma = maProducer.nextValue(close);
-                var atr$$1 = atrProducer.nextValue(tick);
-                if (ma != undefined && atr$$1 != undefined) {
+                var atr = atrProducer.nextValue(tick);
+                if (ma != undefined && atr != undefined) {
                     result = {
                         middle: ma,
-                        upper: ma + (input.multiplier * (atr$$1)),
-                        lower: ma - (input.multiplier * (atr$$1))
+                        upper: ma + (input.multiplier * (atr)),
+                        lower: ma - (input.multiplier * (atr))
                     };
                 }
                 tick = yield result;
@@ -4198,7 +4121,6 @@ class ChandelierExitInput extends IndicatorInput {
 }
 class ChandelierExitOutput extends IndicatorInput {
 }
-
 class ChandelierExit extends Indicator {
     constructor(input) {
         super(input);
@@ -4210,17 +4132,17 @@ class ChandelierExit extends Indicator {
         var dataCollector = new FixedSizeLinkedList(input.period * 2, true, true, false);
         this.generator = (function* () {
             var result;
-            var tick = yield;
-            var atr$$1;
+            var tick = yield { high, low };
+            var atr;
             while (true) {
                 var { high, low } = tick;
                 dataCollector.push(high);
                 dataCollector.push(low);
-                atr$$1 = atrProducer.nextValue(tick);
-                if ((dataCollector.totalPushed >= (2 * input.period)) && atr$$1 != undefined) {
+                atr = atrProducer.nextValue(tick);
+                if ((dataCollector.totalPushed >= (2 * input.period)) && atr != undefined) {
                     result = {
-                        exitLong: dataCollector.periodHigh - atr$$1 * input.multiplier,
-                        exitShort: dataCollector.periodLow + atr$$1 * input.multiplier
+                        exitLong: dataCollector.periodHigh - atr * input.multiplier,
+                        exitShort: dataCollector.periodLow + atr * input.multiplier
                     };
                 }
                 tick = yield result;
@@ -4494,135 +4416,133 @@ function getAvailableIndicators () {
   AvailableIndicators.push('crossover');
   return AvailableIndicators;
 }
-
 let AvailableIndicators = getAvailableIndicators();
 
-exports.getAvailableIndicators = getAvailableIndicators;
+exports.ADL = ADL;
+exports.ADX = ADX;
+exports.ATR = ATR;
 exports.AvailableIndicators = AvailableIndicators;
-exports.FixedSizeLinkedList = FixedSizeLinkedList;
+exports.AverageGain = AverageGain;
+exports.AverageLoss = AverageLoss;
+exports.AwesomeOscillator = AwesomeOscillator;
+exports.BollingerBands = BollingerBands;
+exports.CCI = CCI;
 exports.CandleData = CandleData;
 exports.CandleList = CandleList;
-exports.sma = sma;
-exports.SMA = SMA;
-exports.ema = ema;
+exports.ChandelierExit = ChandelierExit;
+exports.ChandelierExitInput = ChandelierExitInput;
+exports.ChandelierExitOutput = ChandelierExitOutput;
+exports.CrossDown = CrossDown;
+exports.CrossUp = CrossUp;
 exports.EMA = EMA;
-exports.wma = wma;
-exports.WMA = WMA;
-exports.wema = wema;
-exports.WEMA = WEMA;
-exports.wildersmoothing = wildersmoothing;
-exports.WilderSmoothing = WilderSmoothing;
-exports.macd = macd;
-exports.MACD = MACD;
-exports.rsi = rsi;
-exports.RSI = RSI;
-exports.bollingerbands = bollingerbands;
-exports.BollingerBands = BollingerBands;
-exports.adx = adx;
-exports.ADX = ADX;
-exports.atr = atr;
-exports.ATR = ATR;
-exports.truerange = truerange;
-exports.TrueRange = TrueRange;
-exports.roc = roc;
-exports.ROC = ROC;
-exports.kst = kst;
-exports.KST = KST;
-exports.psar = psar;
-exports.PSAR = PSAR;
-exports.stochastic = stochastic;
-exports.Stochastic = Stochastic;
-exports.williamsr = williamsr;
-exports.WilliamsR = WilliamsR;
-exports.adl = adl;
-exports.ADL = ADL;
-exports.obv = obv;
-exports.OBV = OBV;
-exports.trix = trix;
-exports.TRIX = TRIX;
-exports.forceindex = forceindex;
+exports.FixedSizeLinkedList = FixedSizeLinkedList;
 exports.ForceIndex = ForceIndex;
-exports.cci = cci;
-exports.CCI = CCI;
-exports.awesomeoscillator = awesomeoscillator;
-exports.AwesomeOscillator = AwesomeOscillator;
-exports.vwap = vwap;
-exports.VWAP = VWAP;
-exports.volumeprofile = volumeprofile;
-exports.VolumeProfile = VolumeProfile;
-exports.mfi = mfi;
-exports.MFI = MFI;
-exports.stochasticrsi = stochasticrsi;
-exports.StochasticRSI = StochasticRSI;
-exports.averagegain = averagegain;
-exports.AverageGain = AverageGain;
-exports.averageloss = averageloss;
-exports.AverageLoss = AverageLoss;
-exports.sd = sd;
-exports.SD = SD;
-exports.highest = highest;
-exports.Highest = Highest;
-exports.lowest = lowest;
-exports.Lowest = Lowest;
-exports.sum = sum;
-exports.Sum = Sum;
-exports.renko = renko;
 exports.HeikinAshi = HeikinAshi;
-exports.heikinashi = heikinashi;
-exports.bullish = bullish;
-exports.bearish = bearish;
+exports.Highest = Highest;
+exports.IchimokuCloud = IchimokuCloud;
+exports.KST = KST;
+exports.KeltnerChannels = KeltnerChannels;
+exports.KeltnerChannelsInput = KeltnerChannelsInput;
+exports.KeltnerChannelsOutput = KeltnerChannelsOutput;
+exports.Lowest = Lowest;
+exports.MACD = MACD;
+exports.MFI = MFI;
+exports.OBV = OBV;
+exports.PSAR = PSAR;
+exports.ROC = ROC;
+exports.RSI = RSI;
+exports.SD = SD;
+exports.SMA = SMA;
+exports.Stochastic = Stochastic;
+exports.StochasticRSI = StochasticRSI;
+exports.Sum = Sum;
+exports.TRIX = TRIX;
+exports.TrueRange = TrueRange;
+exports.VWAP = VWAP;
+exports.VolumeProfile = VolumeProfile;
+exports.WEMA = WEMA;
+exports.WMA = WMA;
+exports.WilderSmoothing = WilderSmoothing;
+exports.WilliamsR = WilliamsR;
 exports.abandonedbaby = abandonedbaby;
-exports.doji = doji;
+exports.adl = adl;
+exports.adx = adx;
+exports.atr = atr;
+exports.averagegain = averagegain;
+exports.averageloss = averageloss;
+exports.awesomeoscillator = awesomeoscillator;
+exports.bearish = bearish;
 exports.bearishengulfingpattern = bearishengulfingpattern;
+exports.bearishfractal = bearishfractal;
+exports.bearishhammerstick = bearishhammerstick;
+exports.bearishharami = bearishharami;
+exports.bearishharamicross = bearishharamicross;
+exports.bearishinvertedhammerstick = bearishinvertedhammerstick;
+exports.bearishmarubozu = bearishmarubozu;
+exports.bearishspinningtop = bearishspinningtop;
+exports.bollingerbands = bollingerbands;
+exports.bullish = bullish;
 exports.bullishengulfingpattern = bullishengulfingpattern;
+exports.bullishfractal = bullishfractal;
+exports.bullishhammerstick = bullishhammerstick;
+exports.bullishharami = bullishharami;
+exports.bullishharamicross = bullishharamicross;
+exports.bullishinvertedhammerstick = bullishinvertedhammerstick;
+exports.bullishmarubozu = bullishmarubozu;
+exports.bullishspinningtop = bullishspinningtop;
+exports.cci = cci;
+exports.chandelierexit = chandelierexit;
+exports.crossDown = crossDown;
+exports.crossUp = crossUp;
 exports.darkcloudcover = darkcloudcover;
+exports.doji = doji;
 exports.downsidetasukigap = downsidetasukigap;
 exports.dragonflydoji = dragonflydoji;
-exports.gravestonedoji = gravestonedoji;
-exports.bullishharami = bullishharami;
-exports.bearishharami = bearishharami;
-exports.bullishharamicross = bullishharamicross;
-exports.bearishharamicross = bearishharamicross;
+exports.ema = ema;
 exports.eveningdojistar = eveningdojistar;
 exports.eveningstar = eveningstar;
-exports.morningdojistar = morningdojistar;
-exports.morningstar = morningstar;
-exports.bullishmarubozu = bullishmarubozu;
-exports.bearishmarubozu = bearishmarubozu;
-exports.piercingline = piercingline;
-exports.bullishspinningtop = bullishspinningtop;
-exports.bearishspinningtop = bearishspinningtop;
-exports.threeblackcrows = threeblackcrows;
-exports.threewhitesoldiers = threewhitesoldiers;
-exports.bullishfractal = bullishfractal;
-exports.bearishfractal = bearishfractal;
-exports.bullishhammerstick = bullishhammerstick;
-exports.bearishhammerstick = bearishhammerstick;
-exports.bullishinvertedhammerstick = bullishinvertedhammerstick;
-exports.bearishinvertedhammerstick = bearishinvertedhammerstick;
+exports.fibonacciretracement = fibonacciretracement;
+exports.forceindex = forceindex;
+exports.getAvailableIndicators = getAvailableIndicators;
+exports.getConfig = getConfig;
+exports.gravestonedoji = gravestonedoji;
 exports.hammerpattern = hammerpattern;
 exports.hammerpatternunconfirmed = hammerpatternunconfirmed;
 exports.hangingman = hangingman;
 exports.hangingmanunconfirmed = hangingmanunconfirmed;
+exports.heikinashi = heikinashi;
+exports.highest = highest;
+exports.ichimokucloud = ichimokucloud;
+exports.keltnerchannels = keltnerchannels;
+exports.kst = kst;
+exports.lowest = lowest;
+exports.macd = macd;
+exports.mfi = mfi;
+exports.morningdojistar = morningdojistar;
+exports.morningstar = morningstar;
+exports.obv = obv;
+exports.piercingline = piercingline;
+exports.psar = psar;
+exports.renko = renko;
+exports.roc = roc;
+exports.rsi = rsi;
+exports.sd = sd;
+exports.setConfig = setConfig;
 exports.shootingstar = shootingstar;
 exports.shootingstarunconfirmed = shootingstarunconfirmed;
-exports.tweezertop = tweezertop;
+exports.sma = sma;
+exports.stochastic = stochastic;
+exports.stochasticrsi = stochasticrsi;
+exports.sum = sum;
+exports.threeblackcrows = threeblackcrows;
+exports.threewhitesoldiers = threewhitesoldiers;
+exports.trix = trix;
+exports.truerange = truerange;
 exports.tweezerbottom = tweezerbottom;
-exports.fibonacciretracement = fibonacciretracement;
-exports.ichimokucloud = ichimokucloud;
-exports.IchimokuCloud = IchimokuCloud;
-exports.keltnerchannels = keltnerchannels;
-exports.KeltnerChannels = KeltnerChannels;
-exports.KeltnerChannelsInput = KeltnerChannelsInput;
-exports.KeltnerChannelsOutput = KeltnerChannelsOutput;
-exports.chandelierexit = chandelierexit;
-exports.ChandelierExit = ChandelierExit;
-exports.ChandelierExitInput = ChandelierExitInput;
-exports.ChandelierExitOutput = ChandelierExitOutput;
-exports.crossUp = crossUp;
-exports.CrossUp = CrossUp;
-exports.crossDown = crossDown;
-exports.CrossDown = CrossDown;
-exports.setConfig = setConfig;
-exports.getConfig = getConfig;
-//# sourceMappingURL=index.js.map
+exports.tweezertop = tweezertop;
+exports.volumeprofile = volumeprofile;
+exports.vwap = vwap;
+exports.wema = wema;
+exports.wildersmoothing = wildersmoothing;
+exports.williamsr = williamsr;
+exports.wma = wma;
