@@ -151,9 +151,9 @@ declare class VolumeProfileOutput {
 declare function priceFallsBetweenBarRange(low: any, high: any, low1: any, high1: any): boolean;
 declare class VolumeProfile extends Indicator {
     generator: IterableIterator<number | undefined>;
-    constructor(input: VolumeProfileInput);
-    static calculate: typeof volumeprofile;
-    nextValue(price: CandleData): number | undefined;
+    constructor(input: AvgGainInput);
+    static calculate: typeof averagegain;
+    nextValue(price: number): number | undefined;
 }
 declare function volumeprofile(input: VolumeProfileInput): number[];
 declare class IchimokuCloudInput extends IndicatorInput {
@@ -281,6 +281,7 @@ declare function sma(input: MAInput): number[];
     calculatePeriodHigh(): void;
     calculatePeriodLow(): void;
 }
+declare function format(v: number): number;
 declare class WEMA extends Indicator {
     period: number;
     price: number[];
