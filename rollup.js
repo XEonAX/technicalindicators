@@ -20,8 +20,6 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    // jsnext: true,
-                    // main: true,
                     browser: true,
                     mainFields: ["main", "jsnext:main", "browser"],
                 }),
@@ -39,9 +37,7 @@ async function doBuild() {
                     plugins: ["@babel/plugin-external-helpers"],
                     babelHelpers: "external",
                 }),
-                minify({
-                    // comments: false,
-                }),
+                minify({}),
             ],
             external: ["@babel/polyfill"],
             strictDeprecations: true,
@@ -49,13 +45,12 @@ async function doBuild() {
 
         await bundle.write({
             banner: "/* APP */",
-            // dest: "dist/browser.js",
-            output: { file: "dist/browser.js", name: "window" },
             format: "iife",
-            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
+            file: "dist/browser.js",
+            name: "window",
         });
 
         function definitionGenerator() {
@@ -105,15 +100,11 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    // jsnext: true,
-                    // main: true,
                     browser: true,
                     mainFields: ["main", "jsnext:main", "browser"],
                 }),
                 commonjs({}),
-                minify({
-                    // comments: false,
-                }),
+                minify({}),
             ],
             external: ["@babel/polyfill"],
             strictDeprecations: true,
@@ -121,10 +112,9 @@ async function doBuild() {
 
         await customBundle.write({
             banner: "/* APP */",
-            // dest: "dist/custom.js",
-            output: { file: "dist/custom.js", name: "window" },
+            file: "dist/custom.js",
+            name: "window",
             format: "iife",
-            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
@@ -140,15 +130,11 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    // jsnext: true,
-                    // main: true,
                     browser: true,
                     mainFields: ["main", "jsnext:main", "browser"],
                 }),
                 commonjs({}),
-                minify({
-                    // comments: false,
-                }),
+                minify({}),
             ],
             external: ["@babel/polyfill"],
             strictDeprecations: true,
@@ -156,10 +142,9 @@ async function doBuild() {
 
         await bundleES6.write({
             banner: "/* APP */",
-            // dest: "dist/browser.es6.js",
-            output: { file: "dist/browser.es6.js", name: "window" },
+            file: "dist/browser.es6.js",
+            name: "window",
             format: "iife",
-            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
@@ -173,10 +158,9 @@ async function doBuild() {
 
         await bundleNode.write({
             banner: "/* APP */",
-            // dest: "dist/index.js",
-            output: { file: "dist/index.js" },
+            file: "dist/index.js",
             format: "cjs",
-            sourceMap: true,
+            sourcemap: true,
         });
     } catch (e) {
         console.error(e);
