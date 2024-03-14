@@ -129,7 +129,7 @@
     "mocha": "^10.3.0",
     "monaco-editor": "^0.47.0",
     "rimraf": "^5.0.5",
-    "rollup": "^1.32.1",
+    "rollup": "^2.0.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-ignore": "^1.0.3",
     "rollup-plugin-node-builtins": "^2.1.2",

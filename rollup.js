@@ -20,9 +20,10 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    jsnext: true,
-                    main: true,
+                    // jsnext: true,
+                    // main: true,
                     browser: true,
+                    mainFields: ["main", "jsnext:main", "browser"],
                 }),
                 commonjs({}),
                 babel({
@@ -103,9 +104,10 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    jsnext: true,
-                    main: true,
+                    // jsnext: true,
+                    // main: true,
                     browser: true,
+                    mainFields: ["main", "jsnext:main", "browser"],
                 }),
                 commonjs({}),
                 minify({
@@ -136,9 +138,10 @@ async function doBuild() {
                 }),
                 builtins(),
                 resolve({
-                    jsnext: true,
-                    main: true,
+                    // jsnext: true,
+                    // main: true,
                     browser: true,
+                    mainFields: ["main", "jsnext:main", "browser"],
                 }),
                 commonjs({}),
                 minify({

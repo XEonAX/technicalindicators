@@ -1,16 +1,25 @@
-declare class ForceIndexInput extends IndicatorInput {
-    close: number[];
-    volume: number[];
+declare class AvgLossInput extends IndicatorInput {
+    values: number[];
     period: number;
 }
-declare class ForceIndex extends Indicator {
-    result: number[];
+declare class AverageLoss extends Indicator {
     generator: IterableIterator<number | undefined>;
-    constructor(input: ForceIndexInput);
-    static calculate: typeof forceindex;
-    nextValue(price: CandleData): number | undefined;
+    constructor(input: AvgLossInput);
+    static calculate: typeof averageloss;
+    nextValue(price: number): number | undefined;
 }
-declare function forceindex(input: ForceIndexInput): number[];
+declare function averageloss(input: AvgLossInput): number[];
+declare class AvgGainInput extends IndicatorInput {
+    period: number;
+    values: number[];
+}
+declare class AverageGain extends Indicator {
+    generator: IterableIterator<number | undefined>;
+    constructor(input: AvgGainInput);
+    static calculate: typeof averagegain;
+    nextValue(price: number): number | undefined;
+}
+declare function averagegain(input: AvgGainInput): number[];
 declare class VWAPInput extends IndicatorInput {
     high: number[];
     low: number[];
@@ -25,50 +34,28 @@ declare class VWAP extends Indicator {
     nextValue(price: CandleData): number;
 }
 declare function vwap(input: VWAPInput): number[];
-declare class VolumeProfileInput extends IndicatorInput {
+declare class KeltnerChannelsInput extends IndicatorInput {
+    maPeriod: number;
+    atrPeriod: number;
+    useSMA: boolean;
+    multiplier: number;
     high: number[];
-    open: number[];
     low: number[];
     close: number[];
-    volume: number[];
-    noOfBars: number;
 }
-declare class VolumeProfileOutput {
-    rangeStart: number;
-    rangeEnd: number;
-    bullishVolume: number;
-    bearishVolume: number;
+declare class KeltnerChannelsOutput extends IndicatorInput {
+    middle: number;
+    upper: number;
+    lower: number;
 }
-declare function priceFallsBetweenBarRange(low: any, high: any, low1: any, high1: any): boolean;
-declare class VolumeProfile extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: VolumeProfileInput);
-    static calculate: typeof volumeprofile;
-    nextValue(price: CandleData): number | undefined;
+declare class KeltnerChannels extends Indicator {
+    result: KeltnerChannelsOutput[];
+    generator: IterableIterator<KeltnerChannelsOutput | undefined>;
+    constructor(input: KeltnerChannelsInput);
+    static calculate: typeof keltnerchannels;
+    nextValue(price: KeltnerChannelsInput): KeltnerChannelsOutput | undefined;
 }
-declare function volumeprofile(input: VolumeProfileInput): number[];
-declare class AvgGainInput extends IndicatorInput {
-    period: number;
-    values: number[];
-}
-declare class AverageGain extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: AvgGainInput);
-    static calculate: typeof averagegain;
-    nextValue(price: number): number | undefined;
-}
-declare function averagegain(input: AvgGainInput): number[];
-declare class AvgLossInput extends IndicatorInput {
-    values: number[];
-    period: number;
-}
-declare class AverageLoss extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: AvgLossInput);
-    static calculate: typeof averageloss;
-    nextValue(price: number): number | undefined;
-}
-declare function averageloss(input: AvgLossInput): number[];
+declare function keltnerchannels(input: KeltnerChannelsInput): KeltnerChannelsOutput[];
 /**
  * Created by AAravindan on 5/4/16.
  */
@@ -138,28 +125,6 @@ declare class IchimokuCloud extends Indicator {
     nextValue(price: CandleData): IchimokuCloudOutput;
 }
 declare function ichimokucloud(input: IchimokuCloudInput): IchimokuCloudOutput[];
-declare class KeltnerChannelsInput extends IndicatorInput {
-    maPeriod: number;
-    atrPeriod: number;
-    useSMA: boolean;
-    multiplier: number;
-    high: number[];
-    low: number[];
-    close: number[];
-}
-declare class KeltnerChannelsOutput extends IndicatorInput {
-    middle: number;
-    upper: number;
-    lower: number;
-}
-declare class KeltnerChannels extends Indicator {
-    result: KeltnerChannelsOutput[];
-    generator: IterableIterator<KeltnerChannelsOutput | undefined>;
-    constructor(input: KeltnerChannelsInput);
-    static calculate: typeof keltnerchannels;
-    nextValue(price: KeltnerChannelsInput): KeltnerChannelsOutput | undefined;
-}
-declare function keltnerchannels(input: KeltnerChannelsInput): KeltnerChannelsOutput[];
 declare class ChandelierExitInput extends IndicatorInput {
     period: number;
     multiplier: number;
@@ -178,6 +143,41 @@ declare class ChandelierExit extends Indicator {
     nextValue(price: ChandelierExitInput): ChandelierExitOutput | undefined;
 }
 declare function chandelierexit(input: ChandelierExitInput): number[];
+declare class VolumeProfileInput extends IndicatorInput {
+    high: number[];
+    open: number[];
+    low: number[];
+    close: number[];
+    volume: number[];
+    noOfBars: number;
+}
+declare class VolumeProfileOutput {
+    rangeStart: number;
+    rangeEnd: number;
+    bullishVolume: number;
+    bearishVolume: number;
+}
+declare function priceFallsBetweenBarRange(low: any, high: any, low1: any, high1: any): boolean;
+declare class VolumeProfile extends Indicator {
+    generator: IterableIterator<number | undefined>;
+    constructor(input: VolumeProfileInput);
+    static calculate: typeof volumeprofile;
+    nextValue(price: CandleData): number | undefined;
+}
+declare function volumeprofile(input: VolumeProfileInput): number[];
+declare class ForceIndexInput extends IndicatorInput {
+    close: number[];
+    volume: number[];
+    period: number;
+}
+declare class ForceIndex extends Indicator {
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: ForceIndexInput);
+    static calculate: typeof forceindex;
+    nextValue(price: CandleData): number | undefined;
+}
+declare function forceindex(input: ForceIndexInput): number[];
  class StockData {
     open: number[];
     high: number[];

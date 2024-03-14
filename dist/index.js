@@ -1,8 +1,3 @@
-/* APP */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 class Item {
     constructor(data, prev, next) {
         this.next = next;
@@ -499,6 +494,7 @@ class WilderSmoothing extends Indicator {
         this.period = input.period;
         this.price = input.values;
         var genFn = function* (period) {
+            new LinkedList();
             var sum = 0;
             var counter = 1;
             var current = yield;
@@ -1904,7 +1900,7 @@ class CCI extends Indicator {
         var highs = input.high;
         var closes = input.close;
         var period = input.period;
-        var format = this.format;
+        this.format;
         let constant = 0.015;
         var currentTpSet = new FixedSizeLinkedList(period);
         var tpSMACalculator = new SMA({
@@ -2035,7 +2031,7 @@ class VWAP extends Indicator {
         var highs = input.high;
         var closes = input.close;
         var volumes = input.volume;
-        var format = this.format;
+        this.format;
         if (!(lows.length === highs.length && highs.length === closes.length)) {
             throw "Inputs(low,high, close) not of equal size";
         }
@@ -2211,7 +2207,6 @@ class MFI extends Indicator {
         this.generator = (function* () {
             var result;
             var tick;
-            var lastClose;
             var positiveFlowForPeriod;
             var rawMoneyFlow = 0;
             var moneyFlowRatio;
@@ -2219,7 +2214,7 @@ class MFI extends Indicator {
             let typicalPriceValue = null;
             let prevousTypicalPrice = null;
             tick = yield;
-            lastClose = tick.close; //Fist value 
+            tick.close; //Fist value 
             tick = yield;
             while (true) {
                 var { high, low, close, volume } = tick;
@@ -2284,7 +2279,7 @@ class StochasticRSI extends Indicator {
         let stochasticPeriod = input.stochasticPeriod;
         let kPeriod = input.kPeriod;
         let dPeriod = input.dPeriod;
-        let format = this.format;
+        this.format;
         this.result = [];
         this.generator = (function* () {
             let rsi = new RSI({ period: rsiPeriod, values: [] });
@@ -2496,7 +2491,7 @@ function sum(input) {
 class Renko extends Indicator {
     constructor(input) {
         super(input);
-        var format = this.format;
+        this.format;
         let useATR = input.useATR;
         let brickSize = input.brickSize || 0;
         if (useATR) {
@@ -2513,7 +2508,6 @@ class Renko extends Indicator {
         let lastLow = Infinity;
         let lastClose = 0;
         let lastVolume = 0;
-        let lastTimestamp = 0;
         this.generator = (function* () {
             let candleData = yield;
             while (true) {
@@ -2524,7 +2518,7 @@ class Renko extends Indicator {
                     lastLow = candleData.low;
                     lastClose = candleData.close;
                     lastVolume = candleData.volume;
-                    lastTimestamp = candleData.timestamp;
+                    candleData.timestamp;
                     candleData = yield;
                     continue;
                 }
@@ -2560,7 +2554,7 @@ class Renko extends Indicator {
                     lastLow =
                         lastLow < candleData.low ? lastLow : candleData.low;
                     lastVolume = lastVolume + candleData.volume;
-                    lastTimestamp = candleData.timestamp;
+                    candleData.timestamp;
                     candleData = yield;
                 }
             }
@@ -2609,14 +2603,12 @@ function renko(input) {
 class HeikinAshi extends Indicator {
     constructor(input) {
         super(input);
-        var format = this.format;
+        this.format;
         this.result = new CandleList();
         let lastOpen = null;
         let lastHigh = 0;
         let lastLow = Infinity;
         let lastClose = 0;
-        let lastVolume = 0;
-        let lastTimestamp = 0;
         this.generator = (function* () {
             let candleData = yield;
             let calculated = null;
@@ -2631,8 +2623,8 @@ class HeikinAshi extends Indicator {
                             candleData.high +
                             candleData.low) /
                             4;
-                    lastVolume = candleData.volume || 0;
-                    lastTimestamp = candleData.timestamp || 0;
+                    candleData.volume || 0;
+                    candleData.timestamp || 0;
                     calculated = {
                         open: lastOpen,
                         high: lastHigh,
@@ -2813,16 +2805,16 @@ class MorningStar extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
-        let seconddaysOpen = data.open[1];
+        data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
         let seconddaysLow = data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.high[2];
+        data.low[2];
         let firstdaysMidpoint = ((firstdaysOpen + firstdaysClose) / 2);
         let isFirstBearish = firstdaysClose < firstdaysOpen;
         let isSmallBodyExists = ((firstdaysLow > seconddaysLow) &&
@@ -2849,12 +2841,12 @@ class BullishEngulfingPattern extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.high[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
-        let seconddaysHigh = data.high[1];
-        let seconddaysLow = data.low[1];
+        data.high[1];
+        data.low[1];
         let isBullishEngulfing = ((firstdaysClose < firstdaysOpen) &&
             (firstdaysOpen > seconddaysOpen) &&
             (firstdaysClose > seconddaysOpen) &&
@@ -2876,7 +2868,7 @@ class BullishHarami extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
@@ -2903,7 +2895,7 @@ class BullishHaramiCross extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
@@ -2951,7 +2943,7 @@ class MorningDojiStar extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
@@ -2959,8 +2951,8 @@ class MorningDojiStar extends CandlestickFinder {
         let seconddaysLow = data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.high[2];
+        data.low[2];
         let firstdaysMidpoint = ((firstdaysOpen + firstdaysClose) / 2);
         let isFirstBearish = firstdaysClose < firstdaysOpen;
         let dojiExists = new Doji().hasPattern({
@@ -2992,16 +2984,16 @@ class DownsideTasukiGap extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
-        let seconddaysLow = data.low[1];
+        data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.high[2];
+        data.low[2];
         let isFirstBearish = firstdaysClose < firstdaysOpen;
         let isSecondBearish = seconddaysClose < seconddaysOpen;
         let isThirdBullish = thirddaysClose > thirddaysOpen;
@@ -3048,11 +3040,11 @@ class PiercingLine extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
-        let seconddaysHigh = data.high[1];
+        data.high[1];
         let seconddaysLow = data.low[1];
         let firstdaysMidpoint = ((firstdaysOpen + firstdaysClose) / 2);
         let isDowntrend = seconddaysLow < firstdaysLow;
@@ -3077,15 +3069,15 @@ class ThreeWhiteSoldiers extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
-        let seconddaysLow = data.low[1];
+        data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
         let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.low[2];
         let isUpTrend = seconddaysHigh > firstdaysHigh &&
             thirddaysHigh > seconddaysHigh;
         let isAllBullish = firstdaysOpen < firstdaysClose &&
@@ -3320,12 +3312,12 @@ class BearishEngulfingPattern extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.high[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
-        let seconddaysHigh = data.high[1];
-        let seconddaysLow = data.low[1];
+        data.high[1];
+        data.low[1];
         let isBearishEngulfing = ((firstdaysClose > firstdaysOpen) &&
             (firstdaysOpen < seconddaysOpen) &&
             (firstdaysClose < seconddaysOpen) &&
@@ -3347,7 +3339,7 @@ class BearishHarami extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
@@ -3374,7 +3366,7 @@ class BearishHaramiCross extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
@@ -3402,15 +3394,15 @@ class EveningDojiStar extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
         let seconddaysLow = data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.high[2];
+        data.low[2];
         let firstdaysMidpoint = ((firstdaysOpen + firstdaysClose) / 2);
         let isFirstBullish = firstdaysClose > firstdaysOpen;
         let dojiExists = new Doji().hasPattern({
@@ -3442,15 +3434,15 @@ class EveningStar extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
-        let seconddaysOpen = data.open[1];
+        data.low[0];
+        data.open[1];
         let seconddaysClose = data.close[1];
         let seconddaysHigh = data.high[1];
         let seconddaysLow = data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
-        let thirddaysLow = data.low[2];
+        data.high[2];
+        data.low[2];
         let firstdaysMidpoint = ((firstdaysOpen + firstdaysClose) / 2);
         let isFirstBullish = firstdaysClose > firstdaysOpen;
         let isSmallBodyExists = ((firstdaysHigh < seconddaysLow) &&
@@ -3499,15 +3491,15 @@ class ThreeBlackCrows extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
-        let seconddaysHigh = data.high[1];
+        data.high[1];
         let seconddaysLow = data.low[1];
         let thirddaysOpen = data.open[2];
         let thirddaysClose = data.close[2];
-        let thirddaysHigh = data.high[2];
+        data.high[2];
         let thirddaysLow = data.low[2];
         let isDownTrend = firstdaysLow > seconddaysLow &&
             seconddaysLow > thirddaysLow;
@@ -3726,7 +3718,7 @@ class AbandonedBaby extends CandlestickFinder {
     logic(data) {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
-        let firstdaysHigh = data.high[0];
+        data.high[0];
         let firstdaysLow = data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
@@ -3764,11 +3756,11 @@ class DarkCloudCover extends CandlestickFinder {
         let firstdaysOpen = data.open[0];
         let firstdaysClose = data.close[0];
         let firstdaysHigh = data.high[0];
-        let firstdaysLow = data.low[0];
+        data.low[0];
         let seconddaysOpen = data.open[1];
         let seconddaysClose = data.close[1];
-        let seconddaysHigh = data.high[1];
-        let seconddaysLow = data.low[1];
+        data.high[1];
+        data.low[1];
         let firstdayMidpoint = ((firstdaysClose + firstdaysOpen) / 2);
         let isFirstBullish = firstdaysClose > firstdaysOpen;
         let isSecondBearish = seconddaysClose < seconddaysOpen;
@@ -3910,7 +3902,7 @@ class BearishFractal extends CandlestickFinder {
         let daysOpen = data.open[n];
         let daysClose = data.close[n];
         let daysHigh = data.high[n];
-        let daysLow = data.low[n];
+        data.low[n];
         let isBearishFractal = daysOpen > daysClose;
         isBearishFractal = isBearishFractal && this.approximateEqual(daysOpen, daysHigh);
         isBearishFractal = isBearishFractal && (daysHigh > data.high[n - 2]);
@@ -4418,131 +4410,4 @@ function getAvailableIndicators () {
 }
 let AvailableIndicators = getAvailableIndicators();
 
-exports.ADL = ADL;
-exports.ADX = ADX;
-exports.ATR = ATR;
-exports.AvailableIndicators = AvailableIndicators;
-exports.AverageGain = AverageGain;
-exports.AverageLoss = AverageLoss;
-exports.AwesomeOscillator = AwesomeOscillator;
-exports.BollingerBands = BollingerBands;
-exports.CCI = CCI;
-exports.CandleData = CandleData;
-exports.CandleList = CandleList;
-exports.ChandelierExit = ChandelierExit;
-exports.ChandelierExitInput = ChandelierExitInput;
-exports.ChandelierExitOutput = ChandelierExitOutput;
-exports.CrossDown = CrossDown;
-exports.CrossUp = CrossUp;
-exports.EMA = EMA;
-exports.FixedSizeLinkedList = FixedSizeLinkedList;
-exports.ForceIndex = ForceIndex;
-exports.HeikinAshi = HeikinAshi;
-exports.Highest = Highest;
-exports.IchimokuCloud = IchimokuCloud;
-exports.KST = KST;
-exports.KeltnerChannels = KeltnerChannels;
-exports.KeltnerChannelsInput = KeltnerChannelsInput;
-exports.KeltnerChannelsOutput = KeltnerChannelsOutput;
-exports.Lowest = Lowest;
-exports.MACD = MACD;
-exports.MFI = MFI;
-exports.OBV = OBV;
-exports.PSAR = PSAR;
-exports.ROC = ROC;
-exports.RSI = RSI;
-exports.SD = SD;
-exports.SMA = SMA;
-exports.Stochastic = Stochastic;
-exports.StochasticRSI = StochasticRSI;
-exports.Sum = Sum;
-exports.TRIX = TRIX;
-exports.TrueRange = TrueRange;
-exports.VWAP = VWAP;
-exports.VolumeProfile = VolumeProfile;
-exports.WEMA = WEMA;
-exports.WMA = WMA;
-exports.WilderSmoothing = WilderSmoothing;
-exports.WilliamsR = WilliamsR;
-exports.abandonedbaby = abandonedbaby;
-exports.adl = adl;
-exports.adx = adx;
-exports.atr = atr;
-exports.averagegain = averagegain;
-exports.averageloss = averageloss;
-exports.awesomeoscillator = awesomeoscillator;
-exports.bearish = bearish;
-exports.bearishengulfingpattern = bearishengulfingpattern;
-exports.bearishfractal = bearishfractal;
-exports.bearishhammerstick = bearishhammerstick;
-exports.bearishharami = bearishharami;
-exports.bearishharamicross = bearishharamicross;
-exports.bearishinvertedhammerstick = bearishinvertedhammerstick;
-exports.bearishmarubozu = bearishmarubozu;
-exports.bearishspinningtop = bearishspinningtop;
-exports.bollingerbands = bollingerbands;
-exports.bullish = bullish;
-exports.bullishengulfingpattern = bullishengulfingpattern;
-exports.bullishfractal = bullishfractal;
-exports.bullishhammerstick = bullishhammerstick;
-exports.bullishharami = bullishharami;
-exports.bullishharamicross = bullishharamicross;
-exports.bullishinvertedhammerstick = bullishinvertedhammerstick;
-exports.bullishmarubozu = bullishmarubozu;
-exports.bullishspinningtop = bullishspinningtop;
-exports.cci = cci;
-exports.chandelierexit = chandelierexit;
-exports.crossDown = crossDown;
-exports.crossUp = crossUp;
-exports.darkcloudcover = darkcloudcover;
-exports.doji = doji;
-exports.downsidetasukigap = downsidetasukigap;
-exports.dragonflydoji = dragonflydoji;
-exports.ema = ema;
-exports.eveningdojistar = eveningdojistar;
-exports.eveningstar = eveningstar;
-exports.fibonacciretracement = fibonacciretracement;
-exports.forceindex = forceindex;
-exports.getAvailableIndicators = getAvailableIndicators;
-exports.getConfig = getConfig;
-exports.gravestonedoji = gravestonedoji;
-exports.hammerpattern = hammerpattern;
-exports.hammerpatternunconfirmed = hammerpatternunconfirmed;
-exports.hangingman = hangingman;
-exports.hangingmanunconfirmed = hangingmanunconfirmed;
-exports.heikinashi = heikinashi;
-exports.highest = highest;
-exports.ichimokucloud = ichimokucloud;
-exports.keltnerchannels = keltnerchannels;
-exports.kst = kst;
-exports.lowest = lowest;
-exports.macd = macd;
-exports.mfi = mfi;
-exports.morningdojistar = morningdojistar;
-exports.morningstar = morningstar;
-exports.obv = obv;
-exports.piercingline = piercingline;
-exports.psar = psar;
-exports.renko = renko;
-exports.roc = roc;
-exports.rsi = rsi;
-exports.sd = sd;
-exports.setConfig = setConfig;
-exports.shootingstar = shootingstar;
-exports.shootingstarunconfirmed = shootingstarunconfirmed;
-exports.sma = sma;
-exports.stochastic = stochastic;
-exports.stochasticrsi = stochasticrsi;
-exports.sum = sum;
-exports.threeblackcrows = threeblackcrows;
-exports.threewhitesoldiers = threewhitesoldiers;
-exports.trix = trix;
-exports.truerange = truerange;
-exports.tweezerbottom = tweezerbottom;
-exports.tweezertop = tweezertop;
-exports.volumeprofile = volumeprofile;
-exports.vwap = vwap;
-exports.wema = wema;
-exports.wildersmoothing = wildersmoothing;
-exports.williamsr = williamsr;
-exports.wma = wma;
+export { ADL, ADX, ATR, AvailableIndicators, AverageGain, AverageLoss, AwesomeOscillator, BollingerBands, CCI, CandleData, CandleList, ChandelierExit, ChandelierExitInput, ChandelierExitOutput, CrossDown, CrossUp, EMA, FixedSizeLinkedList, ForceIndex, HeikinAshi, Highest, IchimokuCloud, KST, KeltnerChannels, KeltnerChannelsInput, KeltnerChannelsOutput, Lowest, MACD, MFI, OBV, PSAR, ROC, RSI, SD, SMA, Stochastic, StochasticRSI, Sum, TRIX, TrueRange, VWAP, VolumeProfile, WEMA, WMA, WilderSmoothing, WilliamsR, abandonedbaby, adl, adx, atr, averagegain, averageloss, awesomeoscillator, bearish, bearishengulfingpattern, bearishfractal, bearishhammerstick, bearishharami, bearishharamicross, bearishinvertedhammerstick, bearishmarubozu, bearishspinningtop, bollingerbands, bullish, bullishengulfingpattern, bullishfractal, bullishhammerstick, bullishharami, bullishharamicross, bullishinvertedhammerstick, bullishmarubozu, bullishspinningtop, cci, chandelierexit, crossDown, crossUp, darkcloudcover, doji, downsidetasukigap, dragonflydoji, ema, eveningdojistar, eveningstar, fibonacciretracement, forceindex, getAvailableIndicators, getConfig, gravestonedoji, hammerpattern, hammerpatternunconfirmed, hangingman, hangingmanunconfirmed, heikinashi, highest, ichimokucloud, keltnerchannels, kst, lowest, macd, mfi, morningdojistar, morningstar, obv, piercingline, psar, renko, roc, rsi, sd, setConfig, shootingstar, shootingstarunconfirmed, sma, stochastic, stochasticrsi, sum, threeblackcrows, threewhitesoldiers, trix, truerange, tweezerbottom, tweezertop, volumeprofile, vwap, wema, wildersmoothing, williamsr, wma };
