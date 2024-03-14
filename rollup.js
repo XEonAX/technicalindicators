@@ -45,12 +45,12 @@ async function doBuild() {
 
         await bundle.write({
             banner: "/* APP */",
+            file: "dist/browser.js",
+            name: "window",
             format: "iife",
             globals: {
                 "@babel/polyfill": "window",
             },
-            file: "dist/browser.js",
-            name: "window",
         });
 
         function definitionGenerator() {
