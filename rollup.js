@@ -44,14 +44,15 @@ async function doBuild() {
                 }),
             ],
             external: ["@babel/polyfill"],
+            strictDeprecations: true,
         });
 
         await bundle.write({
             banner: "/* APP */",
             // dest: "dist/browser.js",
-            output: { file: "dist/browser.js" },
+            output: { file: "dist/browser.js", name: "window" },
             format: "iife",
-            moduleName: "window",
+            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
@@ -115,14 +116,15 @@ async function doBuild() {
                 }),
             ],
             external: ["@babel/polyfill"],
+            strictDeprecations: true,
         });
 
         await customBundle.write({
             banner: "/* APP */",
             // dest: "dist/custom.js",
-            output: { file: "dist/custom.js" },
+            output: { file: "dist/custom.js", name: "window" },
             format: "iife",
-            moduleName: "window",
+            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
@@ -149,14 +151,15 @@ async function doBuild() {
                 }),
             ],
             external: ["@babel/polyfill"],
+            strictDeprecations: true,
         });
 
         await bundleES6.write({
             banner: "/* APP */",
             // dest: "dist/browser.es6.js",
-            output: { file: "dist/browser.es6.js" },
+            output: { file: "dist/browser.es6.js", name: "window" },
             format: "iife",
-            moduleName: "window",
+            // moduleName: "window",
             globals: {
                 "@babel/polyfill": "window",
             },
@@ -165,6 +168,7 @@ async function doBuild() {
         let bundleNode = await rollup({
             input: "index.js",
             external: ["@babel/polyfill"],
+            strictDeprecations: true,
         });
 
         await bundleNode.write({
