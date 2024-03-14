@@ -1,6 +1,6 @@
   <div style="display: flex;justify-content:center;" align="center">
     <img src="https://img.shields.io/github/package-json/v/rylorin/technicalindicators" />
-    <img src="https://https://github.com/rylorin/technicalindicators/workflows/publish/badge.svg?branch=master" />
+    <img src="https://github.com/rylorin/technicalindicators/workflows/publish/badge.svg?branch=master" />
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" /> 
     <img src="https://img.shields.io/npm/dt/@rylorin/technicalindicators.svg" />
   </div>
