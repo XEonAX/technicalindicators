@@ -12,21 +12,46 @@ declare class VWAP extends Indicator {
     nextValue(price: CandleData): number;
 }
 declare function vwap(input: VWAPInput): number[];
-/**
- * Created by AAravindan on 5/4/16.
- */
-declare class RenkoInput extends IndicatorInput {
-    period?: number;
-    brickSize?: number;
-    useATR?: boolean;
-    low?: number[];
-    open?: number[];
-    volume?: number[];
-    high?: number[];
-    close?: number[];
-    timestamp?: number[];
+declare class VolumeProfileInput extends IndicatorInput {
+    high: number[];
+    open: number[];
+    low: number[];
+    close: number[];
+    volume: number[];
+    noOfBars: number;
 }
-declare function renko(input: RenkoInput): CandleList;
+declare class VolumeProfileOutput {
+    rangeStart: number;
+    rangeEnd: number;
+    bullishVolume: number;
+    bearishVolume: number;
+}
+declare function priceFallsBetweenBarRange(low: any, high: any, low1: any, high1: any): boolean;
+declare class VolumeProfile extends Indicator {
+    generator: IterableIterator<number | undefined>;
+    constructor(input: VolumeProfileInput);
+    static calculate: typeof volumeprofile;
+    nextValue(price: CandleData): number | undefined;
+}
+declare function volumeprofile(input: VolumeProfileInput): number[];
+declare class ChandelierExitInput extends IndicatorInput {
+    period: number;
+    multiplier: number;
+    high: number[];
+    low: number[];
+    close: number[];
+}
+declare class ChandelierExitOutput extends IndicatorInput {
+    exitLong: number;
+    exitShort: number;
+}
+declare class ChandelierExit extends Indicator {
+    generator: IterableIterator<ChandelierExitOutput | undefined>;
+    constructor(input: ChandelierExitInput);
+    static calculate: typeof chandelierexit;
+    nextValue(price: ChandelierExitInput): ChandelierExitOutput | undefined;
+}
+declare function chandelierexit(input: ChandelierExitInput): number[];
 declare class KeltnerChannelsInput extends IndicatorInput {
     maPeriod: number;
     atrPeriod: number;
@@ -49,24 +74,19 @@ declare class KeltnerChannels extends Indicator {
     nextValue(price: KeltnerChannelsInput): KeltnerChannelsOutput | undefined;
 }
 declare function keltnerchannels(input: KeltnerChannelsInput): KeltnerChannelsOutput[];
-declare class ChandelierExitInput extends IndicatorInput {
-    period: number;
-    multiplier: number;
-    high: number[];
-    low: number[];
+declare class ForceIndexInput extends IndicatorInput {
     close: number[];
+    volume: number[];
+    period: number;
 }
-declare class ChandelierExitOutput extends IndicatorInput {
-    exitLong: number;
-    exitShort: number;
+declare class ForceIndex extends Indicator {
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: ForceIndexInput);
+    static calculate: typeof forceindex;
+    nextValue(price: CandleData): number | undefined;
 }
-declare class ChandelierExit extends Indicator {
-    generator: IterableIterator<ChandelierExitOutput | undefined>;
-    constructor(input: ChandelierExitInput);
-    static calculate: typeof chandelierexit;
-    nextValue(price: ChandelierExitInput): ChandelierExitOutput | undefined;
-}
-declare function chandelierexit(input: ChandelierExitInput): number[];
+declare function forceindex(input: ForceIndexInput): number[];
 declare class AvgLossInput extends IndicatorInput {
     values: number[];
     period: number;
@@ -78,6 +98,54 @@ declare class AverageLoss extends Indicator {
     nextValue(price: number): number | undefined;
 }
 declare function averageloss(input: AvgLossInput): number[];
+declare class AvgGainInput extends IndicatorInput {
+    period: number;
+    values: number[];
+}
+declare class AverageGain extends Indicator {
+    generator: IterableIterator<number | undefined>;
+    constructor(input: AvgGainInput);
+    static calculate: typeof averagegain;
+    nextValue(price: number): number | undefined;
+}
+declare function averagegain(input: AvgGainInput): number[];
+/**
+ * Created by AAravindan on 5/4/16.
+ */
+declare class RenkoInput extends IndicatorInput {
+    period?: number;
+    brickSize?: number;
+    useATR?: boolean;
+    low?: number[];
+    open?: number[];
+    volume?: number[];
+    high?: number[];
+    close?: number[];
+    timestamp?: number[];
+}
+declare function renko(input: RenkoInput): CandleList;
+declare class IchimokuCloudInput extends IndicatorInput {
+    high: number[];
+    low: number[];
+    conversionPeriod: number;
+    basePeriod: number;
+    spanPeriod: number;
+    displacement: number;
+}
+declare class IchimokuCloudOutput {
+    conversion: number;
+    base: number;
+    spanA: number;
+    spanB: number;
+}
+declare class IchimokuCloud extends Indicator {
+    result: IchimokuCloudOutput[];
+    generator: IterableIterator<IchimokuCloudOutput | undefined>;
+    constructor(input: IchimokuCloudInput);
+    static calculate: typeof ichimokucloud;
+    nextValue(price: CandleData): IchimokuCloudOutput;
+}
+declare function ichimokucloud(input: IchimokuCloudInput): IchimokuCloudOutput[];
 /**
  * Calcaultes the fibonacci retracements for given start and end points
  *
@@ -110,74 +178,6 @@ declare class HeikinAshi extends Indicator {
     nextValue(price: CandleData): CandleData | undefined;
 }
 declare function heikinashi(input: HeikinAshiInput): CandleList;
-declare class AvgGainInput extends IndicatorInput {
-    period: number;
-    values: number[];
-}
-declare class AverageGain extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: AvgGainInput);
-    static calculate: typeof averagegain;
-    nextValue(price: number): number | undefined;
-}
-declare function averagegain(input: AvgGainInput): number[];
-declare class ForceIndexInput extends IndicatorInput {
-    close: number[];
-    volume: number[];
-    period: number;
-}
-declare class ForceIndex extends Indicator {
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: ForceIndexInput);
-    static calculate: typeof forceindex;
-    nextValue(price: CandleData): number | undefined;
-}
-declare function forceindex(input: ForceIndexInput): number[];
-declare class VolumeProfileInput extends IndicatorInput {
-    high: number[];
-    open: number[];
-    low: number[];
-    close: number[];
-    volume: number[];
-    noOfBars: number;
-}
-declare class VolumeProfileOutput {
-    rangeStart: number;
-    rangeEnd: number;
-    bullishVolume: number;
-    bearishVolume: number;
-}
-declare function priceFallsBetweenBarRange(low: any, high: any, low1: any, high1: any): boolean;
-declare class VolumeProfile extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: AvgGainInput);
-    static calculate: typeof averagegain;
-    nextValue(price: number): number | undefined;
-}
-declare function volumeprofile(input: VolumeProfileInput): number[];
-declare class IchimokuCloudInput extends IndicatorInput {
-    high: number[];
-    low: number[];
-    conversionPeriod: number;
-    basePeriod: number;
-    spanPeriod: number;
-    displacement: number;
-}
-declare class IchimokuCloudOutput {
-    conversion: number;
-    base: number;
-    spanA: number;
-    spanB: number;
-}
-declare class IchimokuCloud extends Indicator {
-    result: IchimokuCloudOutput[];
-    generator: IterableIterator<IchimokuCloudOutput | undefined>;
-    constructor(input: IchimokuCloudInput);
-    static calculate: typeof ichimokucloud;
-    nextValue(price: CandleData): IchimokuCloudOutput;
-}
-declare function ichimokucloud(input: IchimokuCloudInput): IchimokuCloudOutput[];
  class StockData {
     open: number[];
     high: number[];
@@ -202,20 +202,26 @@ declare class CandleList {
     volume?: number[];
     timestamp?: number[];
 }
-declare class ATRInput extends IndicatorInput {
-    low: number[];
-    high: number[];
-    close: number[];
-    period: number;
+/**
+ * Created by AAravindan on 5/7/16.
+ */
+ class FixedSizeLinkedList extends LinkedList {
+    size: number;
+    maintainHigh?: boolean;
+    maintainLow?: boolean;
+    maintainSum?: boolean;
+    totalPushed: number;
+    periodHigh: number;
+    periodLow: number;
+    periodSum: number;
+    lastShift: number;
+    _push: (data: number) => void;
+    constructor(size: number, maintainHigh?: boolean, maintainLow?: boolean, maintainSum?: boolean);
+    add(data: number): void;
+    iterator(): IterableIterator<any>;
+    calculatePeriodHigh(): void;
+    calculatePeriodLow(): void;
 }
-declare class ATR extends Indicator {
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: ATRInput);
-    static calculate: typeof atr;
-    nextValue(price: CandleData): number | undefined;
-}
-declare function atr(input: ATRInput): number[];
 declare class IndicatorInput {
     reversedInput?: boolean;
     format?: (data: number) => number;
@@ -236,6 +242,20 @@ declare class Indicator {
     static reverseInputs(input: any): void;
     getResult(): any;
 }
+declare class ATRInput extends IndicatorInput {
+    low: number[];
+    high: number[];
+    close: number[];
+    period: number;
+}
+declare class ATR extends Indicator {
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: ATRInput);
+    static calculate: typeof atr;
+    nextValue(price: CandleData): number | undefined;
+}
+declare function atr(input: ATRInput): number[];
 declare class EMA extends Indicator {
     period: number;
     price: number[];
@@ -261,51 +281,6 @@ declare class SMA extends Indicator {
     nextValue(price: number): number | undefined;
 }
 declare function sma(input: MAInput): number[];
-/**
- * Created by AAravindan on 5/7/16.
- */
- class FixedSizeLinkedList extends LinkedList {
-    size: number;
-    maintainHigh?: boolean;
-    maintainLow?: boolean;
-    maintainSum?: boolean;
-    totalPushed: number;
-    periodHigh: number;
-    periodLow: number;
-    periodSum: number;
-    lastShift: number;
-    _push: (data: number) => void;
-    constructor(size: number, maintainHigh?: boolean, maintainLow?: boolean, maintainSum?: boolean);
-    add(data: number): void;
-    iterator(): IterableIterator<any>;
-    calculatePeriodHigh(): void;
-    calculatePeriodLow(): void;
-}
-declare function format(v: number): number;
-declare class WEMA extends Indicator {
-    period: number;
-    price: number[];
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: MAInput);
-    static calculate: typeof wema;
-    nextValue(price: number): number | undefined;
-}
-declare function wema(input: MAInput): number[];
-declare class TrueRangeInput extends IndicatorInput {
-    low: number[];
-    high: number[];
-    close: number[];
-}
-declare class TrueRange extends Indicator {
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: TrueRangeInput);
-    static calculate: typeof truerange;
-    nextValue(price: CandleData): number | undefined;
-}
-declare function truerange(input: TrueRangeInput): number[];
-declare function format(v: number): number;
 declare class LinkedList {
     private _head;
     private _tail;
@@ -326,5 +301,29 @@ declare class LinkedList {
     resetCursor(): this;
     next(): any;
 }
+declare function format(v: number): number;
+declare class TrueRangeInput extends IndicatorInput {
+    low: number[];
+    high: number[];
+    close: number[];
+}
+declare class TrueRange extends Indicator {
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: TrueRangeInput);
+    static calculate: typeof truerange;
+    nextValue(price: CandleData): number | undefined;
+}
+declare function truerange(input: TrueRangeInput): number[];
+declare class WEMA extends Indicator {
+    period: number;
+    price: number[];
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: MAInput);
+    static calculate: typeof wema;
+    nextValue(price: number): number | undefined;
+}
+declare function wema(input: MAInput): number[];
 declare function setConfig(key: any, value: any): void;
 declare function getConfig(key: any): any;
