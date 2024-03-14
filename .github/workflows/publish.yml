@@ -39,6 +39,9 @@ jobs:
 
       # Publish the package
       - name: "Publishing to Npm registry"
-        run: yarn publish
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
+          npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          CI: true
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

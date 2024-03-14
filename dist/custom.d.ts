@@ -11,6 +11,20 @@ declare class ForceIndex extends Indicator {
     nextValue(price: CandleData): number | undefined;
 }
 declare function forceindex(input: ForceIndexInput): number[];
+declare class VWAPInput extends IndicatorInput {
+    high: number[];
+    low: number[];
+    close: number[];
+    volume: number[];
+}
+declare class VWAP extends Indicator {
+    result: number[];
+    generator: IterableIterator<number>;
+    constructor(input: VWAPInput);
+    static calculate: typeof vwap;
+    nextValue(price: CandleData): number;
+}
+declare function vwap(input: VWAPInput): number[];
 declare class VolumeProfileInput extends IndicatorInput {
     high: number[];
     open: number[];
@@ -33,31 +47,6 @@ declare class VolumeProfile extends Indicator {
     nextValue(price: CandleData): number | undefined;
 }
 declare function volumeprofile(input: VolumeProfileInput): number[];
-declare class VWAPInput extends IndicatorInput {
-    high: number[];
-    low: number[];
-    close: number[];
-    volume: number[];
-}
-declare class VWAP extends Indicator {
-    result: number[];
-    generator: IterableIterator<number>;
-    constructor(input: VWAPInput);
-    static calculate: typeof vwap;
-    nextValue(price: CandleData): number;
-}
-declare function vwap(input: VWAPInput): number[];
-declare class AvgLossInput extends IndicatorInput {
-    values: number[];
-    period: number;
-}
-declare class AverageLoss extends Indicator {
-    generator: IterableIterator<number | undefined>;
-    constructor(input: AvgLossInput);
-    static calculate: typeof averageloss;
-    nextValue(price: number): number | undefined;
-}
-declare function averageloss(input: AvgLossInput): number[];
 declare class AvgGainInput extends IndicatorInput {
     period: number;
     values: number[];
@@ -69,6 +58,17 @@ declare class AverageGain extends Indicator {
     nextValue(price: number): number | undefined;
 }
 declare function averagegain(input: AvgGainInput): number[];
+declare class AvgLossInput extends IndicatorInput {
+    values: number[];
+    period: number;
+}
+declare class AverageLoss extends Indicator {
+    generator: IterableIterator<number | undefined>;
+    constructor(input: AvgLossInput);
+    static calculate: typeof averageloss;
+    nextValue(price: number): number | undefined;
+}
+declare function averageloss(input: AvgLossInput): number[];
 /**
  * Created by AAravindan on 5/4/16.
  */
@@ -116,6 +116,28 @@ declare function heikinashi(input: HeikinAshiInput): CandleList;
  * @returns {number[]}
  */
 declare function fibonacciretracement(start: number, end: number): number[];
+declare class IchimokuCloudInput extends IndicatorInput {
+    high: number[];
+    low: number[];
+    conversionPeriod: number;
+    basePeriod: number;
+    spanPeriod: number;
+    displacement: number;
+}
+declare class IchimokuCloudOutput {
+    conversion: number;
+    base: number;
+    spanA: number;
+    spanB: number;
+}
+declare class IchimokuCloud extends Indicator {
+    result: IchimokuCloudOutput[];
+    generator: IterableIterator<IchimokuCloudOutput | undefined>;
+    constructor(input: IchimokuCloudInput);
+    static calculate: typeof ichimokucloud;
+    nextValue(price: CandleData): IchimokuCloudOutput;
+}
+declare function ichimokucloud(input: IchimokuCloudInput): IchimokuCloudOutput[];
 declare class KeltnerChannelsInput extends IndicatorInput {
     maPeriod: number;
     atrPeriod: number;
@@ -156,28 +178,6 @@ declare class ChandelierExit extends Indicator {
     nextValue(price: ChandelierExitInput): ChandelierExitOutput | undefined;
 }
 declare function chandelierexit(input: ChandelierExitInput): number[];
-declare class IchimokuCloudInput extends IndicatorInput {
-    high: number[];
-    low: number[];
-    conversionPeriod: number;
-    basePeriod: number;
-    spanPeriod: number;
-    displacement: number;
-}
-declare class IchimokuCloudOutput {
-    conversion: number;
-    base: number;
-    spanA: number;
-    spanB: number;
-}
-declare class IchimokuCloud extends Indicator {
-    result: IchimokuCloudOutput[];
-    generator: IterableIterator<IchimokuCloudOutput | undefined>;
-    constructor(input: IchimokuCloudInput);
-    static calculate: typeof ichimokucloud;
-    nextValue(price: CandleData): IchimokuCloudOutput;
-}
-declare function ichimokucloud(input: IchimokuCloudInput): IchimokuCloudOutput[];
  class StockData {
     open: number[];
     high: number[];
@@ -202,16 +202,6 @@ declare class CandleList {
     volume?: number[];
     timestamp?: number[];
 }
-declare class EMA extends Indicator {
-    period: number;
-    price: number[];
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: MAInput);
-    static calculate: typeof ema;
-    nextValue(price: number): number;
-}
-declare function ema(input: MAInput): number[];
 /**
  * Created by AAravindan on 5/7/16.
  */
@@ -232,21 +222,6 @@ declare function ema(input: MAInput): number[];
     calculatePeriodHigh(): void;
     calculatePeriodLow(): void;
 }
-declare class MAInput extends IndicatorInput {
-    period: number;
-    values: number[];
-    constructor(period: number, values: number[]);
-}
-declare class SMA extends Indicator {
-    period: number;
-    price: number[];
-    result: number[];
-    generator: IterableIterator<number | undefined>;
-    constructor(input: MAInput);
-    static calculate: typeof sma;
-    nextValue(price: number): number | undefined;
-}
-declare function sma(input: MAInput): number[];
 declare class IndicatorInput {
     reversedInput?: boolean;
     format?: (data: number) => number;
@@ -267,6 +242,21 @@ declare class Indicator {
     static reverseInputs(input: any): void;
     getResult(): any;
 }
+declare class MAInput extends IndicatorInput {
+    period: number;
+    values: number[];
+    constructor(period: number, values: number[]);
+}
+declare class SMA extends Indicator {
+    period: number;
+    price: number[];
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: MAInput);
+    static calculate: typeof sma;
+    nextValue(price: number): number | undefined;
+}
+declare function sma(input: MAInput): number[];
 declare class ATRInput extends IndicatorInput {
     low: number[];
     high: number[];
@@ -281,6 +271,17 @@ declare class ATR extends Indicator {
     nextValue(price: CandleData): number | undefined;
 }
 declare function atr(input: ATRInput): number[];
+declare class EMA extends Indicator {
+    period: number;
+    price: number[];
+    result: number[];
+    generator: IterableIterator<number | undefined>;
+    constructor(input: MAInput);
+    static calculate: typeof ema;
+    nextValue(price: number): number;
+}
+declare function ema(input: MAInput): number[];
+declare function format(v: number): number;
 declare class LinkedList {
     private _head;
     private _tail;
@@ -301,7 +302,6 @@ declare class LinkedList {
     resetCursor(): this;
     next(): any;
 }
-declare function format(v: number): number;
 declare class WEMA extends Indicator {
     period: number;
     price: number[];

@@ -1,8 +1,6 @@
-// import babel from "@rollup/plugin-babel";
-// import minify from "@rollup/plugin-terser";
+import babel from "@rollup/plugin-babel";
+import minify from "@rollup/plugin-terser";
 import { rollup } from "rollup";
-import babel from "rollup-plugin-babel";
-import minify from "rollup-plugin-babel-minify";
 import commonjs from "rollup-plugin-commonjs";
 import builtins from "rollup-plugin-node-builtins";
 import resolve from "rollup-plugin-node-resolve";
@@ -31,16 +29,17 @@ async function doBuild() {
                     babelrc: false,
                     presets: [
                         [
-                            "es2015",
+                            "@babel/preset-env",
                             {
                                 modules: false,
                             },
                         ],
                     ],
-                    plugins: ["external-helpers"],
+                    plugins: ["@babel/plugin-external-helpers"],
+                    babelHelpers: "external",
                 }),
                 minify({
-                    comments: false,
+                    // comments: false,
                 }),
             ],
             external: ["@babel/polyfill"],
@@ -110,7 +109,7 @@ async function doBuild() {
                 }),
                 commonjs({}),
                 minify({
-                    comments: false,
+                    // comments: false,
                 }),
             ],
             external: ["@babel/polyfill"],
@@ -143,7 +142,7 @@ async function doBuild() {
                 }),
                 commonjs({}),
                 minify({
-                    comments: false,
+                    // comments: false,
                 }),
             ],
             external: ["@babel/polyfill"],
