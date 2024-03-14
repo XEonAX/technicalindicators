@@ -13,10 +13,10 @@
     "**/.hg": true,
     "**/.svn": true,
     "**/CVS": true,
-    "dist": true,
-    "build": true,
-    "node_modules": true,
-    "lib": true
+    "node_modules": true
+    // "dist": true,
+    // "build": true,
+    // "lib": true
   },
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
