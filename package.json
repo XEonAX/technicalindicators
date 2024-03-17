@@ -107,7 +107,7 @@
     "generateDts": "./generateTsDefinitions.sh",
     "start": "sh test.sh",
     "test": "mocha --recursive --require @babel/register",
-    "test:watch": "mocha --watch --require @babel/register"
+    "test:watch": "mocha --watch --recursive --require @babel/register"
   },
   "dependencies": {},
   "devDependencies": {
