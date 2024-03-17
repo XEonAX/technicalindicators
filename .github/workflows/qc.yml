@@ -1,0 +1,38 @@
+name: Quality Check
+
+on:
+  push:
+    paths-ignore:
+      - "README.md"
+      - "LICENSE"
+
+jobs:
+  qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    strategy:
+      matrix:
+        NODE_VERSION: [18.19.1, 20.11.1]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.NODE_VERSION }}
+          cache: "yarn" # caches the yarn cache folder not node_modules
+
+      - name: Install packages
+        run: yarn install --frozen-lockfile
+
+      - name: "Build test"
+        run: yarn build
+
+      # - name: Lint test
+      #   run: yarn lint
+
+      - name: Run tests
+        run: yarn test

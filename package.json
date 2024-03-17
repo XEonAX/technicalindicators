@@ -107,7 +107,7 @@
     "generateDts": "./generateTsDefinitions.sh",
     "start": "sh test.sh",
     "test": "mocha --recursive --require @babel/register",
-    "test:watch": "mocha --watch --require @babel/register"
+    "test:watch": "mocha --watch --recursive --require @babel/register"
   },
   "dependencies": {},
   "devDependencies": {
@@ -118,12 +118,12 @@
     "@babel/register": "^7.23.7",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-terser": "^0.4.4",
-    "@types/node": "^20.11.27",
+    "@types/node": "^20.11.28",
     "bl": "^6.0.12",
     "draw-candlestick": "2.0.3",
     "dts-bundle": "^0.7.3",
     "inquirer": "^9.2.16",
-    "koa": "^2.15.0",
+    "koa": "^2.15.1",
     "koa-static": "^5.0.0",
     "lit-html": "^3.1.2",
     "mocha": "^10.3.0",
@@ -142,7 +142,7 @@
     "typescript": "^5.4.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
