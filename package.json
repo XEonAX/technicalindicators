@@ -1,5 +1,5 @@
 {
-  "name": "@rylorin/technicalindicators",
+  "name": "@xeonax/technicalindicators",
   "version": "3.1.23",
   "description": "Techincal Indicators written in javascript",
   "keywords": [
@@ -86,16 +86,16 @@
     "Cross Down",
     "Cross Over"
   ],
-  "homepage": "https://github.com/rylorin/technicalindicators#readme",
+  "homepage": "https://github.com/xeonax/technicalindicators#readme",
   "bugs": {
-    "url": "https://github.com/rylorin/technicalindicators/issues"
+    "url": "https://github.com/xeonax/technicalindicators/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rylorin/technicalindicators.git"
+    "url": "git+https://github.com/xeonax/technicalindicators.git"
   },
   "license": "MIT",
-  "author": "rylorin@protonmail.com",
+  "author": "xeonax@protonmail.com",
   "sideEffects": false,
   "main": "dist/index.js",
   "module": "lib/index.js",
@@ -120,7 +120,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/node": "^20.11.28",
     "bl": "^6.0.12",
-    "draw-candlestick": "2.0.3",
+    "@xeonax/draw-candlestick": "3.0.0",
     "dts-bundle": "^0.7.3",
     "inquirer": "^9.2.16",
     "koa": "^2.15.1",
@@ -146,5 +146,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
