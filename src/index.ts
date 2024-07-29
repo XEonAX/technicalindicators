@@ -12,6 +12,7 @@ export { SuperTrend, supertrend } from './momentum/SuperTrend';
 export { TRIX, trix } from "./momentum/TRIX";
 export { WilliamsR, williamsr } from "./momentum/WilliamsR";
 export { EMA, ema } from "./moving_averages/EMA";
+export { HMA, hma } from './moving_averages/HMA';
 export { MACD, macd } from "./moving_averages/MACD";
 export { SMA, sma } from "./moving_averages/SMA";
 export { WEMA, wema } from "./moving_averages/WEMA";
