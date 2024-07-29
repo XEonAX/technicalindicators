@@ -101,6 +101,7 @@ export { fibonacciretracement } from "./drawingtools/fibonacci";
 export { IchimokuCloud, ichimokucloud } from "./ichimoku/IchimokuCloud";
 
 export { CrossDown, crossDown } from "./Utils/CrossDown";
+export { CrossOver, crossOver } from "./Utils/CrossOver";
 export { CrossUp, crossUp } from "./Utils/CrossUp";
 export {
     ChandelierExit,
